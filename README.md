@@ -103,6 +103,22 @@ with open('/path/to/local/file.pdf', 'wb') as f:
     f.write(response.content)
 ```
 
+PHP example
+```php
+$url = 'http://<docker_host>:<port>/';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json')); // Assuming you're requesting JSON
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$body = json_encode([
+    'contents' => base64_encode($html)
+]);
+# print response
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+echo curl_exec($ch);
+
+```
+
 ## TODO
 
 * Implement conversion of URLs to PDF

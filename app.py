@@ -7,6 +7,7 @@
 """
 import json
 import tempfile
+import os
 
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
@@ -33,13 +34,20 @@ def application(request):
             payload = json.loads(request.data)
             source_file.write(payload['contents'].decode('base64'))
             options = payload.get('options', {})
+            token = payload.get('token', {})
+
         elif request.files:
             # First check if any files were uploaded
             source_file.write(request.files['file'].read())
             # Load any options that may have been provided in options
             options = json.loads(request.form.get('options', '{}'))
+            token = payload.get('token', {})
 
         source_file.flush()
+
+        # Auth Token Check
+        if os.environ.get('API_AUTH_TOKEN') != token:
+            return
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
