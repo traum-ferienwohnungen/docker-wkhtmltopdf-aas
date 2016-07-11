@@ -12,7 +12,7 @@ import os
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
 from executor import execute
-
+from pipes import quote
 
 @Request.application
 def application(request):
@@ -57,9 +57,9 @@ def application(request):
         # Add Global Options
         if options:
             for option, value in options.items():
-                args.append('--%s' % option)
+                args.append('--%s' % quote(option))
                 if value:
-                    args.append('"%s"' % value)
+                    args.append('"%s"' % quote(value))
 
         # Add source file name and output file name
         file_name = source_file.name
