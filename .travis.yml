@@ -10,7 +10,7 @@ services:
 
 before_install:
   - docker build -t madnight/docker-wkhtmltopdf-aas .
-  - docker run -d -p 127.0.0.1:80:5555 madnight/docker-wkhtmltopdf-aas
+  - docker run -d -e API_TOKEN='travisci-test123456789' -p 127.0.0.1:80:5555 madnight/docker-wkhtmltopdf-aas
   - pip install requests
 
 script:
