@@ -29,6 +29,8 @@ def application(request):
 
     with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
 
+        token = None
+        options = None
         if request_is_json:
             # If a JSON payload is there, all data is in the payload
             payload = json.loads(request.data)
@@ -41,7 +43,7 @@ def application(request):
             source_file.write(request.files['file'].read())
             # Load any options that may have been provided in options
             options = json.loads(request.form.get('options', '{}'))
-            token = payload.get('token', {})
+            token = json.loads(request.form.get('token', '{}'))
 
         source_file.flush()
 
