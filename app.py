@@ -23,7 +23,7 @@ def application(request):
     The application will return a response with the PDF file.
     """
     if request.method != 'POST':
-        return
+        return Response('Method Not Allowed', status=405)
 
     request_is_json = request.content_type.endswith('json')
 
@@ -47,7 +47,7 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
-            return
+            return Response('Unauthorized', status=401)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
