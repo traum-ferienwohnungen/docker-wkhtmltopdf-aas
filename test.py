@@ -1,6 +1,5 @@
 import json
 import requests
-import base64
 
 url = 'http://127.0.0.1:80';
 
