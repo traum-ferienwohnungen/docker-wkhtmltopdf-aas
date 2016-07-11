@@ -46,7 +46,7 @@ def application(request):
         source_file.flush()
 
         # Auth Token Check
-        if os.environ.get('API_AUTH_TOKEN') != token:
+        if os.environ.get('API_TOKEN') != token:
             return
 
         # Evaluate argument to run with subprocess
