@@ -1,4 +1,5 @@
-# docker-wkhtmltopdf-aas
+# docker-wkhtmltopdf-aas 
+[![Build Status](https://travis-ci.org/madnight/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/madnight/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a web service.
 
