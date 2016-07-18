@@ -26,6 +26,7 @@ def application(request):
         return Response('Method Not Allowed', status=405)
 
     request_is_json = request.content_type.endswith('json')
+    footer_file = tempfile.NamedTemporaryFile(suffix='.html')
 
     with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
 
@@ -35,6 +36,8 @@ def application(request):
             # If a JSON payload is there, all data is in the payload
             payload = json.loads(request.data)
             source_file.write(payload['contents'].decode('base64'))
+            if payload.has_key('footer'):
+                footer_file.write(payload['footer'].decode('base64'))
             options = payload.get('options', {})
             token = payload.get('token', {})
 
@@ -46,6 +49,7 @@ def application(request):
             token = json.loads(request.form.get('token', '{}'))
 
         source_file.flush()
+        footer_file.flush()
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
@@ -57,9 +61,13 @@ def application(request):
         # Add Global Options
         if options:
             for option, value in options.items():
-                args.append('--%s' % quote(option))
+                args.append('--' + quote(option))
                 if value:
-                    args.append('"%s"' % quote(value))
+                    args.append(quote(value))
+
+    # Add footer file name and output file name
+        file_name = footer_file.name 
+        args += ["--footer-html", file_name ]
 
         # Add source file name and output file name
         file_name = source_file.name
