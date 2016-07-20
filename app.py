@@ -8,11 +8,24 @@
 import json
 import tempfile
 import os
+from time import time
 
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
 from executor import execute
 from pipes import quote
+from prometheus_client import Counter, Histogram, REGISTRY, generate_latest
+
+REQUEST_COUNT = Counter(
+    'pdfservice_request_total',
+    'desciption',
+    ['method', 'endpoint', 'code']
+)
+REQUEST_LATENCIES = Histogram(
+    'pdfservice_request_latency_seconds',
+    'desciption',
+    ['method', 'endpoint', 'code']
+)
 
 @Request.application
 def application(request):
@@ -22,17 +35,35 @@ def application(request):
     request data, with keys 'base64_html' and 'options'.
     The application will return a response with the PDF file.
     """
+    start_time = time()
+
     if request.method == 'GET':
-        return Response('OK', status=200)
+        if request.path == '/metrics':
+            status = 200
+            REQUEST_LATENCIES.labels(
+                    request.method,
+                    request.path,
+                    status
+            ).observe(time() - start_time)
+            REQUEST_COUNT.labels(request.method, request.path, status).inc()
+            return Response(generate_latest(REGISTRY), status=status)
+        else:
+            return Response('OK', status=200)
 
     if request.method != 'POST':
-        return Response('Method Not Allowed', status=405)
+        status = 405
+        REQUEST_LATENCIES.labels(
+                request.method,
+                request.path,
+                status
+        ).observe(time() - start_time)
+        REQUEST_COUNT.labels(request.method, request.path, status).inc()
+        return Response('Method Not Allowed', status=status)
+
 
     request_is_json = request.content_type.endswith('json')
     footer_file = tempfile.NamedTemporaryFile(suffix='.html')
-
-    with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
-
+    with REQUEST_COUNT.labels(request.method, request.path, 500).count_exceptions(), tempfile.NamedTemporaryFile(suffix='.html') as source_file:
         token = None
         options = None
         if request_is_json:
@@ -56,7 +87,14 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
-            return Response('Unauthorized', status=401)
+            status = 401
+            REQUEST_LATENCIES.labels(
+                    request.method,
+                    request.path,
+                    status
+            ).observe(time() - start_time)
+            REQUEST_COUNT.labels(request.method, request.path, status).inc()
+            return Response('Unauthorized', status=status)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
@@ -68,8 +106,8 @@ def application(request):
                 if value:
                     args.append(quote(value))
 
-    # Add footer file name and output file name
-        file_name = footer_file.name 
+        # Add footer file name and output file name
+        file_name = footer_file.name
         args += ["--footer-html", file_name ]
 
         # Add source file name and output file name
@@ -79,6 +117,12 @@ def application(request):
         # Execute the command using executor
         execute(' '.join(args))
 
+        REQUEST_LATENCIES.labels(
+                request.method,
+                request.path,
+                200
+        ).observe(time() - start_time)
+        REQUEST_COUNT.labels(request.method, request.path, 200).inc()
         return Response(
             wrap_file(request.environ, open(file_name + '.pdf')),
             mimetype='application/pdf',
