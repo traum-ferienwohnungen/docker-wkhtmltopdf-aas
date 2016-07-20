@@ -22,6 +22,9 @@ def application(request):
     request data, with keys 'base64_html' and 'options'.
     The application will return a response with the PDF file.
     """
+    if request.method == 'GET':
+        return Response('OK', status=200)
+
     if request.method != 'POST':
         return Response('Method Not Allowed', status=405)
 
