@@ -1,14 +1,15 @@
 #! /usr/bin/env python
 """
-    WSGI APP to convert wkhtmltopdf As a webservice
-
+    WSGI APP to convert wkhtmltopdf as a webservice
     :copyright: (c) 2013 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
 import json
 import tempfile
 import os
+import httplib as status
 
+from time import time
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
 from executor import execute
@@ -16,17 +17,12 @@ from pipes import quote
 
 @Request.application
 def application(request):
-    """
-    To use this application, the user must send a POST request with
-    base64 or form encoded encoded HTML content and the wkhtmltopdf Options in
-    request data, with keys 'base64_html' and 'options'.
-    The application will return a response with the PDF file.
-    """
+
     if request.method == 'GET':
-        return Response('OK', status=200)
+        return Response(status=status.OK)
 
     if request.method != 'POST':
-        return Response('Method Not Allowed', status=405)
+        return Response(status=status.METHOD_NOT_ALLOWED)
 
     request_is_json = request.content_type.endswith('json')
     footer_file = tempfile.NamedTemporaryFile(suffix='.html')
@@ -56,7 +52,7 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
-            return Response('Unauthorized', status=401)
+            return Response('Unauthorized', status=status.UNAUTHORIZED)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
@@ -68,7 +64,7 @@ def application(request):
                 if value:
                     args.append(quote(value))
 
-    # Add footer file name and output file name
+        # Add footer file name and output file name
         file_name = footer_file.name 
         args += ["--footer-html", file_name ]
 
