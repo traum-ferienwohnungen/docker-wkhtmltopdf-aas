@@ -9,7 +9,7 @@ RUN apt-get update && \
     pip install prometheus_client && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
-ADD app.py /
+ADD src/* /
 EXPOSE 5555
 
 ENTRYPOINT ["usr/local/bin/gunicorn"]
