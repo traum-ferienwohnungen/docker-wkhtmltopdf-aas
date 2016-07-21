@@ -7,9 +7,10 @@ RUN apt-get update && \
     pip install werkzeug executor gunicorn && \
     apt-get autoremove -y && \
     apt-get clean && \
+    pip install prometheus_client && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
-ADD app.py /app.py
+ADD *.py /
 EXPOSE 5555
 
 ENTRYPOINT ["usr/local/bin/gunicorn"]

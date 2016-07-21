@@ -8,11 +8,14 @@
 import json
 import tempfile
 import os
+from time import time
 
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
 from executor import execute
 from pipes import quote
+from prometheus_client import REGISTRY, generate_latest 
+from promstat import REQUEST_COUNT, log_response 
 
 @Request.application
 def application(request):
@@ -22,17 +25,22 @@ def application(request):
     request data, with keys 'base64_html' and 'options'.
     The application will return a response with the PDF file.
     """
+    start_time = time()
+
     if request.method == 'GET':
+        if request.path == '/metrics':
+            log_response(request.method, request.path, 200, start_time)
+            return Response(generate_latest(REGISTRY), status=200)
         return Response('OK', status=200)
 
     if request.method != 'POST':
+        log_response(request.method, request.path, 405, start_time)
         return Response('Method Not Allowed', status=405)
+
 
     request_is_json = request.content_type.endswith('json')
     footer_file = tempfile.NamedTemporaryFile(suffix='.html')
-
-    with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
-
+    with REQUEST_COUNT.labels(request.method, request.path, 500).count_exceptions(), tempfile.NamedTemporaryFile(suffix='.html') as source_file:
         token = None
         options = None
         if request_is_json:
@@ -56,6 +64,7 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
+            log_response(request.method, request.path, 401, start_time)
             return Response('Unauthorized', status=401)
 
         # Evaluate argument to run with subprocess
@@ -68,8 +77,8 @@ def application(request):
                 if value:
                     args.append(quote(value))
 
-    # Add footer file name and output file name
-        file_name = footer_file.name 
+        # Add footer file name and output file name
+        file_name = footer_file.name
         args += ["--footer-html", file_name ]
 
         # Add source file name and output file name
@@ -79,6 +88,7 @@ def application(request):
         # Execute the command using executor
         execute(' '.join(args))
 
+        log_response(request.method, request.path, 200, start_time)
         return Response(
             wrap_file(request.environ, open(file_name + '.pdf')),
             mimetype='application/pdf',
