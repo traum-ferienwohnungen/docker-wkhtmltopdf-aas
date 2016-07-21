@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
-ADD app.py promstat.py /
+ADD app.py /
 EXPOSE 5555
 
 ENTRYPOINT ["usr/local/bin/gunicorn"]
