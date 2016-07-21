@@ -18,12 +18,12 @@ from prometheus_client import Counter, Histogram, REGISTRY, generate_latest
 
 REQUEST_COUNT = Counter(
     'pdfservice_request_total',
-    'desciption',
+    'Total number of HTTP requests made.',
     ['method', 'endpoint', 'code']
 )
 REQUEST_LATENCIES = Histogram(
     'pdfservice_request_latency_seconds',
-    'desciption',
+    'The HTTP request latencies in seconds.',
     ['method', 'endpoint', 'code']
 )
 
