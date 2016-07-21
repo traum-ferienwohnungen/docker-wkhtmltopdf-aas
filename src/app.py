@@ -54,7 +54,7 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
-            return Response('Unauthorized', status=status.UNAUTHORIZED)
+            return Response(status=status.UNAUTHORIZED)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
@@ -66,11 +66,11 @@ def application(request):
                 if value:
                     args.append(quote(value))
 
-        # Add footer file name and output file name
+
+        # Add source, footer and output file name
         file_name = footer_file.name 
         args += ["--footer-html", file_name ]
 
-        # Add source file name and output file name
         file_name = source_file.name
         args += [file_name, file_name + ".pdf"]
 

@@ -6,7 +6,6 @@ RUN apt-get update && \
     pip install werkzeug executor gunicorn prometheus_client && \
     apt-get autoremove -y && \
     apt-get clean && \
-    pip install prometheus_client && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
 ADD src/* /
