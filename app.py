@@ -14,18 +14,8 @@ from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
 from executor import execute
 from pipes import quote
-from prometheus_client import Counter, Histogram, REGISTRY, generate_latest
-
-REQUEST_COUNT = Counter(
-    'pdfservice_request_total',
-    'Total number of HTTP requests made.',
-    ['method', 'endpoint', 'code']
-)
-REQUEST_LATENCIES = Histogram(
-    'pdfservice_request_latency_seconds',
-    'The HTTP request latencies in seconds.',
-    ['method', 'endpoint', 'code']
-)
+from prometheus_client import REGISTRY, generate_latest 
+from promstat import REQUEST_COUNT, log_response 
 
 @Request.application
 def application(request):
@@ -39,26 +29,13 @@ def application(request):
 
     if request.method == 'GET':
         if request.path == '/metrics':
-            status = 200
-            REQUEST_LATENCIES.labels(
-                    request.method,
-                    request.path,
-                    status
-            ).observe(time() - start_time)
-            REQUEST_COUNT.labels(request.method, request.path, status).inc()
-            return Response(generate_latest(REGISTRY), status=status)
-        else:
-            return Response('OK', status=200)
+            log_response(request.method, request.path, 200, start_time)
+            return Response(generate_latest(REGISTRY), status=200)
+        return Response('OK', status=200)
 
     if request.method != 'POST':
-        status = 405
-        REQUEST_LATENCIES.labels(
-                request.method,
-                request.path,
-                status
-        ).observe(time() - start_time)
-        REQUEST_COUNT.labels(request.method, request.path, status).inc()
-        return Response('Method Not Allowed', status=status)
+        log_response(request.method, request.path, 405, start_time)
+        return Response('Method Not Allowed', status=405)
 
 
     request_is_json = request.content_type.endswith('json')
@@ -87,14 +64,8 @@ def application(request):
 
         # Auth Token Check
         if os.environ.get('API_TOKEN') != token:
-            status = 401
-            REQUEST_LATENCIES.labels(
-                    request.method,
-                    request.path,
-                    status
-            ).observe(time() - start_time)
-            REQUEST_COUNT.labels(request.method, request.path, status).inc()
-            return Response('Unauthorized', status=status)
+            log_response(request.method, request.path, 401, start_time)
+            return Response('Unauthorized', status=401)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
@@ -117,12 +88,7 @@ def application(request):
         # Execute the command using executor
         execute(' '.join(args))
 
-        REQUEST_LATENCIES.labels(
-                request.method,
-                request.path,
-                200
-        ).observe(time() - start_time)
-        REQUEST_COUNT.labels(request.method, request.path, 200).inc()
+        log_response(request.method, request.path, 200, start_time)
         return Response(
             wrap_file(request.environ, open(file_name + '.pdf')),
             mimetype='application/pdf',
