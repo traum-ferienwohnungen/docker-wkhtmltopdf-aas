@@ -19,9 +19,8 @@ from prometheus import prometheus_metrics
 @Request.application
 @prometheus_metrics('/metrics')
 def application(request):
-
-    if request.method == 'GET':
-        return Response(status=status.OK)
+    if request.method == 'GET' && request.path == '/healthz':
+        return Response('OK')
 
     if request.method != 'POST':
         return Response(status=status.METHOD_NOT_ALLOWED)
