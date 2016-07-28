@@ -16,22 +16,27 @@ from executor import execute
 from pipes import quote
 from prometheus import prometheus_metrics
 
+API_TOKEN = os.environ.get['API_TOKEN']
+if not API_TOKEN:
+    raise RuntimeError('Please configure an API_TOKEN through the environment')
+
+
 @Request.application
 @prometheus_metrics('/metrics')
 def application(request):
-
     if request.method == 'GET':
         return Response(status=status.OK)
 
     if request.method != 'POST':
         return Response(status=status.METHOD_NOT_ALLOWED)
 
+    if request.headers.get('API_TOKEN') != API_TOKEN:
+        return Response('Unauthorized', status=status.UNAUTHORIZED)
+
     request_is_json = request.content_type.endswith('json')
     footer_file = tempfile.NamedTemporaryFile(suffix='.html')
 
     with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
-
-        token = None
         options = None
         if request_is_json:
             # If a JSON payload is there, all data is in the payload
@@ -40,21 +45,15 @@ def application(request):
             if payload.has_key('footer'):
                 footer_file.write(payload['footer'].decode('base64'))
             options = payload.get('options', {})
-            token = payload.get('token', {})
 
         elif request.files:
             # First check if any files were uploaded
             source_file.write(request.files['file'].read())
             # Load any options that may have been provided in options
             options = json.loads(request.form.get('options', '{}'))
-            token = json.loads(request.form.get('token', '{}'))
 
         source_file.flush()
         footer_file.flush()
-
-        # Auth Token Check
-        if os.environ.get('API_TOKEN') != token:
-            return Response('Unauthorized', status=status.UNAUTHORIZED)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
