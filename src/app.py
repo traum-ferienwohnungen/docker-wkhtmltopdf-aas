@@ -38,8 +38,8 @@ def application(request):
         if request_is_json:
             if payload.has_key('token'):
                 token = payload.get('token', {})
-            if API_TOKEN != token:
-                return Response('Unauthorized', status=status.UNAUTHORIZED)
+                if API_TOKEN != token:
+                    return Response('Unauthorized', status=status.UNAUTHORIZED)
 
             # If a JSON payload is there, all data is in the payload
             payload = json.loads(request.data)
