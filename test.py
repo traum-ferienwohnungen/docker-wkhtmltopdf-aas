@@ -12,11 +12,11 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 def run_tests(url, token):
     data = {
         'contents': '<html>hello world</html>'.encode('base64'),
-        'token': token,
     }
 
     headers = {
         'Content-Type': 'application/json',
+        'Api-Token': token,
     }
 
     # test with valid token
@@ -38,9 +38,9 @@ def run_tests(url, token):
         )
 
     # test with invalid token
-    data = {
-        'contents': '<html>hello world</html>'.encode('base64'),
-        'token': 'this-is-a-invalid-token',
+    headers = {
+        'Content-Type': 'application/json',
+        'Api-Token': 'this-is-a-invalid-token',
     }
 
     response = requests.post(url, data=json.dumps(data), headers=headers)
