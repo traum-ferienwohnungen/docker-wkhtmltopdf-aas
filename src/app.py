@@ -16,7 +16,7 @@ from executor import execute
 from pipes import quote
 from prometheus import prometheus_metrics
 
-API_TOKEN = os.environ.get['API_TOKEN']
+API_TOKEN = os.environ.get('API_TOKEN')
 if not API_TOKEN:
     raise RuntimeError('Please configure an API_TOKEN through the environment')
 
@@ -30,27 +30,23 @@ def application(request):
     if request.method != 'POST':
         return Response(status=status.METHOD_NOT_ALLOWED)
 
-    if request.headers.get('API_TOKEN') != API_TOKEN:
-        return Response('Unauthorized', status=status.UNAUTHORIZED)
-
     request_is_json = request.content_type.endswith('json')
     footer_file = tempfile.NamedTemporaryFile(suffix='.html')
 
     with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
         options = None
         if request_is_json:
+            if payload.has_key('token'):
+                token = payload.get('token', {})
+            if API_TOKEN != token:
+                return Response('Unauthorized', status=status.UNAUTHORIZED)
+
             # If a JSON payload is there, all data is in the payload
             payload = json.loads(request.data)
             source_file.write(payload['contents'].decode('base64'))
             if payload.has_key('footer'):
                 footer_file.write(payload['footer'].decode('base64'))
             options = payload.get('options', {})
-
-        elif request.files:
-            # First check if any files were uploaded
-            source_file.write(request.files['file'].read())
-            # Load any options that may have been provided in options
-            options = json.loads(request.form.get('options', '{}'))
 
         source_file.flush()
         footer_file.flush()
