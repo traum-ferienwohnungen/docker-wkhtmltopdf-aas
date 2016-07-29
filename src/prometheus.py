@@ -14,7 +14,7 @@ REQUEST_LATENCIES = Histogram(
     ['method', 'endpoint', 'code']
 )
 
-def prometheus_metrics(metrics_path, monitor_endpoints):
+def prometheus_metrics(metrics_port, metrics_path, monitor_endpoints):
     monitor_endpoints = set([metrics_path] + list(monitor_endpoints))
     def prometheus_metrics_decorator(f):
         @wraps(f)
@@ -25,17 +25,15 @@ def prometheus_metrics(metrics_path, monitor_endpoints):
                 return f(request)
 
             start_time = time()
-            if request.method == 'GET' and request.path == metrics_path:
-                status = 200
-                REQUEST_LATENCIES.labels(
-                    request.method, request.path, status
-                ).observe(time() - start_time)
-
-                REQUEST_COUNT.labels(request.method, request.path, status).inc()
-                return Response(generate_latest(REGISTRY), status=status)
-
-            with REQUEST_COUNT.labels(request.method, request.path, 500).count_exceptions():
-                response = f(request)
+            # Only respond to /metrics requests via dedicated metrics port
+            request_port = int(request.environ.get('SERVER_PORT', '-1'))
+            if request_port == metrics_port and \
+                    request.path == metrics_path and \
+                    request.method == 'GET':
+                response = Response(generate_latest(REGISTRY), status=200)
+            else:
+                with REQUEST_COUNT.labels(request.method, request.path, 500).count_exceptions():
+                    response = f(request)
 
             REQUEST_COUNT.labels(
                 request.method,
