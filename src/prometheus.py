@@ -14,11 +14,16 @@ REQUEST_LATENCIES = Histogram(
     ['method', 'endpoint', 'code']
 )
 
-def prometheus_metrics(metrics_path):
+def prometheus_metrics(metrics_path, monitor_endpoints):
+    monitor_endpoints = set([metrics_path] + list(monitor_endpoints))
     def prometheus_metrics_decorator(f):
         @wraps(f)
         def f_wrapper(request):
             start_time = time()
+            # Create metrics only for specific endpoints to not flood
+            # prometheus with dynamically created labels.
+            if request.path not in monitor_endpoints:
+                return f(request)
 
             if request.method == 'GET' and request.path == metrics_path:
                 status = 200

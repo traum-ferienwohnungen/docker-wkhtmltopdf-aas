@@ -17,7 +17,7 @@ from pipes import quote
 from prometheus import prometheus_metrics
 
 @Request.application
-@prometheus_metrics('/metrics')
+@prometheus_metrics('/metrics', ('/', '/healthz'))
 def application(request):
 
     if request.method == 'GET':
