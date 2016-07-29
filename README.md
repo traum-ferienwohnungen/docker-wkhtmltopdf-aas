@@ -1,5 +1,7 @@
 # docker-wkhtmltopdf-aas 
 [![Build Status](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Code Climate](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/gpa.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Issue Count](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/issue_count.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a web service.
 
