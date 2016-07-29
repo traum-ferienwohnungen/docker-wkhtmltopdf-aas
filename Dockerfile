@@ -9,8 +9,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
 ADD src/* /
-EXPOSE 5555
+EXPOSE 5555 9191
 
 ENTRYPOINT ["usr/local/bin/gunicorn"]
 
-CMD ["-b", "0.0.0.0:5555", "--log-file", "-", "app:application"]
+CMD ["-b", "0.0.0.0:5555", "-b", "0.0.0.0:9191", "--log-file", "-", "app:application"]
