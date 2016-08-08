@@ -30,30 +30,23 @@ def application(request):
 
     with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
 
-        token = None
-        options = None
+        token = options = None
         if request_is_json:
             # If a JSON payload is there, all data is in the payload
             payload = json.loads(request.data)
+            token = payload.get('token', {})
+            # Auth Token Check
+            if os.environ.get('API_TOKEN') != token:
+                return Response(status=status.UNAUTHORIZED)
             source_file.write(payload['contents'].decode('base64'))
             if payload.has_key('footer'):
                 footer_file.write(payload['footer'].decode('base64'))
             options = payload.get('options', {})
-            token = payload.get('token', {})
-
-        elif request.files:
-            # First check if any files were uploaded
-            source_file.write(request.files['file'].read())
-            # Load any options that may have been provided in options
-            options = json.loads(request.form.get('options', '{}'))
-            token = json.loads(request.form.get('token', '{}'))
+        else: 
+            return Response(status=status.UNAUTHORIZED)
 
         source_file.flush()
         footer_file.flush()
-
-        # Auth Token Check
-        if os.environ.get('API_TOKEN') != token:
-            return Response(status=status.UNAUTHORIZED)
 
         # Evaluate argument to run with subprocess
         args = ['wkhtmltopdf']
@@ -64,7 +57,6 @@ def application(request):
                 args.append('--' + quote(option))
                 if value:
                     args.append(quote(value))
-
 
         # Add source, footer and output file name
         file_name = footer_file.name 
@@ -80,7 +72,6 @@ def application(request):
             wrap_file(request.environ, open(file_name + '.pdf')),
             mimetype='application/pdf',
         )
-
 
 if __name__ == '__main__':
     from werkzeug.serving import run_simple
