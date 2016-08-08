@@ -70,6 +70,10 @@ echo curl_exec($ch);
 
 ```
 
+## Security
+
+This service exposes two ports 5555 and 9191. The Port 9191 should be only available internally (e.g. 127.0.0.1) since there is no api token / security mechanism for prometheus metrics yet. The Port 5555 is secured by an api token and can therefore be public (0.0.0.0).
+
 ## Bugs and questions
 
 The development of the container takes place on 
