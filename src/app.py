@@ -12,69 +12,57 @@ import httplib as status
 from time import time
 from werkzeug.wsgi import wrap_file
 from werkzeug.wrappers import Request, Response
+from werkzeug.serving import run_simple
 from executor import execute
 from pipes import quote
+from operator import add
 from prometheus import prometheus_metrics
 
 @Request.application
 @prometheus_metrics(9191, '/metrics', ('/', '/healthz'))
 def application(request):
+
     if request.method == 'GET':
         return Response(status=status.OK)
 
-    if request.method != 'POST':
+    if request.method != 'POST' or not request.content_type.endswith('json'):
         return Response(status=status.METHOD_NOT_ALLOWED)
 
-    request_is_json = request.content_type.endswith('json')
-    footer_file = tempfile.NamedTemporaryFile(suffix='.html')
+    # If a JSON payload is there, all data is in the payload
+    payload = json.loads(request.data)
+    footer_file = source_file = tempfile.NamedTemporaryFile(suffix='.html')
+    token = payload.get('token', {})
 
-    with tempfile.NamedTemporaryFile(suffix='.html') as source_file:
+    # Auth Token Check
+    if os.environ.get('API_TOKEN') != token:
+        return Response(status=status.UNAUTHORIZED)
 
-        token = options = None
-        if request_is_json:
-            # If a JSON payload is there, all data is in the payload
-            payload = json.loads(request.data)
-            token = payload.get('token', {})
-            # Auth Token Check
-            if os.environ.get('API_TOKEN') != token:
-                return Response(status=status.UNAUTHORIZED)
-            source_file.write(payload['contents'].decode('base64'))
-            if payload.has_key('footer'):
-                footer_file.write(payload['footer'].decode('base64'))
-            options = payload.get('options', {})
-        else: 
-            return Response(status=status.UNAUTHORIZED)
+    if payload.has_key('footer'):
+        footer_file.write(payload['footer'].decode('base64'))
 
-        source_file.flush()
-        footer_file.flush()
+    source_file.write(payload['contents'].decode('base64'))
+    options = payload.get('options', {})
+    source_file.flush() and footer_file.flush()
+    args = ['wkhtmltopdf']
 
-        # Evaluate argument to run with subprocess
-        args = ['wkhtmltopdf']
+    # Add Global Options
+    if options:
+        args += reduce(add, map(lambda (option,value):
+            ['--' + quote(option), quote(value)], options.items()))
 
-        # Add Global Options
-        if options:
-            for option, value in options.items():
-                args.append('--' + quote(option))
-                if value:
-                    args.append(quote(value))
+    # Add footer and source
+    file_name = source_file.name + ".pdf"
+    args += ["--footer-html", footer_file.name]
+    args += [source_file.name, file_name]
 
-        # Add source, footer and output file name
-        file_name = footer_file.name 
-        args += ["--footer-html", file_name ]
+    # Execute the command using executor
+    execute(' '.join(args))
 
-        file_name = source_file.name
-        args += [file_name, file_name + ".pdf"]
-
-        # Execute the command using executor
-        execute(' '.join(args))
-
-        return Response(
-            wrap_file(request.environ, open(file_name + '.pdf')),
-            mimetype='application/pdf',
-        )
+    return Response(
+        wrap_file(request.environ, open(file_name)),
+        mimetype='application/pdf',
+    )
 
 if __name__ == '__main__':
-    from werkzeug.serving import run_simple
-    run_simple(
-        '127.0.0.1', 5000, application
-    )
+    run_simple('127.0.0.1', 5000, application)
+
