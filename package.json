@@ -1,0 +1,28 @@
+{
+  "name": "docker-wkhtmltopdf-aas",
+  "version": "0.5.1",
+  "description": "",
+  "main": "app.coffee",
+  "scripts": {
+    "start": "forever -c coffee app.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues"
+  },
+  "homepage": "https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "fs": "0.0.2",
+    "http-status-codes": "^1.0.6",
+    "forever": "",
+    "nodemon": "",
+    "temp-write": "^2.1.0"
+  }
+}
