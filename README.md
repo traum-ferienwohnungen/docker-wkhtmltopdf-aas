@@ -54,6 +54,23 @@ with open('/path/to/local/file.pdf', 'wb') as f:
     f.write(response.content)
 ```
 
+#### Shell example
+```bash
+content=$(echo "<html>Your HTML content</html>" | base64)
+footer=$(echo "<html>Your HTML footer</html>" | base64)
+
+curl -vvv -H "Content-Type: application/json" -X POST -d \
+    '{"contents": "'"$content"'",
+      "token": "your-secret-api-token",
+      "options": {
+        "margin-top": "20",
+        "margin-left": "20",
+        "margin-right": "20",
+        "margin-bottom": "30"
+      },
+      "footer": "'"$footer"'"}' \
+    http://<docker_host>:<port> -o OUTPUT_NAME.pdf
+```
 #### PHP example
 ```php
 $url = 'http://<docker_host>:<port>/';
