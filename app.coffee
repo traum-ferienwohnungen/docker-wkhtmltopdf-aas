@@ -13,20 +13,21 @@ app.post '/', bodyParser.json(), (req, res) ->
   check = (token) -> # authentification
     if not token? or token != process.env.API_TOKEN
       return res.send UNAUTHORIZED, 'wrong token'
+
   decode = (base64) -> (Buffer.from base64, 'base64').toString 'ascii' if base64?
+
   argumentize = (options) -> # compile options to arguments
-    (Object.keys(options).map (_) -> ['--'+_, options[_]]).reduce (_, __) -> _.concat __
+      return [] if not options?
+      (Object.keys(options).map (_) -> ['--'+_, options[_]]).reduce (x, xs) -> x.concat xs
 
   [token, options] = [check(req.body.token), argumentize(req.body.options)]
-  [contents, footer] = [req.body.contents, req.body.footer].map (item) ->
-    tmpWrite.sync decode(item), '.html'
+  [contents, footer] = [req.body.contents, req.body.footer].map (item) -> tmpWrite.sync decode(item), '.html'
   output = contents + '.pdf'
 
   args = (option, footer, content, output) -> # combine commandline arguments
     options.concat(['--footer-html', footer]).concat [contents, output]
 
   exec = spawn 'wkhtmltopdf', args(options, footer, contents, output)
-
   exec.on 'close', (code) ->
     res.setHeader('Content-type', 'application/pdf')
     stream = fs.createReadStream(output)
