@@ -17,8 +17,8 @@ app.post '/', bodyParser.json(), (req, res) ->
   decode = (base64) -> (Buffer.from base64, 'base64').toString 'ascii' if base64?
 
   argumentize = (options) -> # compile options to arguments
-      return [] if not options?
-      (Object.keys(options).map (_) -> ['--'+_, options[_]]).reduce (x, xs) -> x.concat xs
+    return [] if not options?
+    (Object.keys(options).map (_) -> ['--'+_, options[_]]).reduce (x, xs) -> x.concat xs
 
   [token, options] = [check(req.body.token), argumentize(req.body.options)]
   [contents, footer] = [req.body.contents, req.body.footer].map (item) -> tmpWrite.sync decode(item), '.html'
