@@ -33,4 +33,4 @@ app.post '/', bodyParser.json(), (req, res) ->
     stream.on 'open', () -> stream.pipe(res)
     stream.on 'error', (err) -> res.end(err)
 
-app.listen process.env.PORT or 4000
+app.listen process.env.PORT or 5555

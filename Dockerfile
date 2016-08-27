@@ -1,4 +1,4 @@
-FROM traumfewo/docker-wkhtmltopdf:v0.12.2.1
+FROM traumfewo/docker-wkhtmltopdf:latest
 MAINTAINER Fabian Beuke <beuke@traum-ferienwohnungen.de>
 
 RUN apt-get update && \
