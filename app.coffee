@@ -2,6 +2,7 @@
 { spawn } = require 'child_process'
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
+parallel = require 'bluebird'
 express = require 'express'
 _ = require 'underscore'
 fs = require 'fs'
@@ -20,20 +21,22 @@ app.post '/', bodyParser.json(), (req, res) ->
   decodeToFile = (content) ->
     tmpWrite decode(content), '.html'
 
-  argumentize = (options) -> # compile options to arguments
+  # compile options to arguments
+  argumentize = (options) ->
     return [] if not options?
     _.flatten _.map options, (_,k) -> ['--'+k, options[k]]
 
-  (tmpWrite '', '.pdf').then (output) -> # non blocking file creations
-    (decodeToFile req.body.footer).then (footer) ->
-      (decodeToFile req.body.contents).then (content) ->
-        exec = spawn 'wkhtmltopdf',
-          argumentize(req.body.options)
-          .concat(['--footer-html', footer], [content, output])
-        exec.on 'close', (code) ->
-          res.setHeader('Content-type', 'application/pdf')
-          stream = fs.createReadStream(output)
-          stream.on 'open', () -> stream.pipe(res)
-          stream.on 'error', (err) -> res.end(err)
+  # async parallel file creations
+  parallel.join tmpWrite('', '.pdf'), decodeToFile(req.body.footer),
+  decodeToFile(req.body.contents), (output, footer, content) ->
+    # combine arguments and call pdf compiler
+    exec = spawn 'wkhtmltopdf', (argumentize(req.body.options)
+      .concat(['--footer-html', footer], [content, output]))
+    exec.on 'close', (code) ->
+      res.setHeader('Content-type', 'application/pdf')
+      stream = fs.createReadStream(output)
+      # send pdf to client
+      stream.on 'open', () -> stream.pipe(res)
+      stream.on 'error', (err) -> res.end(err)
 
 app.listen process.env.PORT or 5555
