@@ -3,6 +3,7 @@
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
 express = require 'express'
+_ = require 'underscore'
 fs = require 'fs'
 app = express()
 
@@ -10,28 +11,29 @@ app.get '/', (req, res) ->
   res.send 'service is up an running'
 
 app.post '/', bodyParser.json(), (req, res) ->
-  check = (token) -> # authentification
-    if not token? or token != process.env.API_TOKEN
-      return res.send UNAUTHORIZED, 'wrong token'
+  if not req.body.token? or req.body.token != process.env.API_TOKEN
+    return res.send UNAUTHORIZED, 'wrong token'
 
-  decode = (base64) -> (Buffer.from base64, 'base64').toString 'ascii' if base64?
+  decode = (base64) ->
+    (Buffer.from base64, 'base64').toString 'ascii' if base64?
+
+  decodeToFile = (content) ->
+    tmpWrite decode(content), '.html'
 
   argumentize = (options) -> # compile options to arguments
     return [] if not options?
-    (Object.keys(options).map (_) -> ['--'+_, options[_]]).reduce (x, xs) -> x.concat xs
+    _.flatten _.map options, (_,k) -> ['--'+k, options[k]]
 
-  [token, options] = [check(req.body.token), argumentize(req.body.options)]
-  [contents, footer] = [req.body.contents, req.body.footer].map (item) -> tmpWrite.sync decode(item), '.html'
-  output = contents + '.pdf'
-
-  args = (option, footer, content, output) -> # combine commandline arguments
-    options.concat(['--footer-html', footer]).concat [contents, output]
-
-  exec = spawn 'wkhtmltopdf', args(options, footer, contents, output)
-  exec.on 'close', (code) ->
-    res.setHeader('Content-type', 'application/pdf')
-    stream = fs.createReadStream(output)
-    stream.on 'open', () -> stream.pipe(res)
-    stream.on 'error', (err) -> res.end(err)
+  (tmpWrite '', '.pdf').then (output) -> # non blocking file creations
+    (decodeToFile req.body.footer).then (footer) ->
+      (decodeToFile req.body.contents).then (content) ->
+        exec = spawn 'wkhtmltopdf',
+          argumentize(req.body.options)
+          .concat(['--footer-html', footer], [content, output])
+        exec.on 'close', (code) ->
+          res.setHeader('Content-type', 'application/pdf')
+          stream = fs.createReadStream(output)
+          stream.on 'open', () -> stream.pipe(res)
+          stream.on 'error', (err) -> res.end(err)
 
 app.listen process.env.PORT or 5555
