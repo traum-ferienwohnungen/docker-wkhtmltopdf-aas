@@ -10,7 +10,9 @@ services:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y poppler-utils bash
+  - sudo apt-get install -y poppler-utils bash npm
+  - sudo npm install -g mocha coffee-script
+  - sudo npm install chakram
   - docker build -t test-service .
   - docker run -d -e API_TOKEN='travisci-test123456789' -p 127.0.0.1:80:5555 --name test-service test-service
   - pip install requests
@@ -21,4 +23,5 @@ script:
   - pdftotext -layout test.pdf - | grep -q "Hello World"
   - pdftotext -layout test.pdf - | grep -q "Lorem ipsum"
   - bash -c '! pdftotext -layout test.pdf - | grep -q "False"'
+  - mocha --compilers coffee:coffee-script/register test.coffee
   - python test.py
