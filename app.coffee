@@ -5,7 +5,7 @@ bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
 parallel = require 'bluebird'
 express = require 'express'
-_ = require 'underscore'
+_ = require 'lodash'
 fs = require 'fs'
 app = express()
 
@@ -25,7 +25,7 @@ app.post '/', bodyParser.json(), (req, res) ->
   # compile options to arguments
   argumentize = (options) ->
     return [] if not options?
-    _.flatten _.map options, (_,k) -> ['--'+k, options[k]]
+    _.flatMap options, (_,k) -> ['--'+k, options[k]]
 
   # async parallel file creations
   parallel.join tmpWrite('', '.pdf'), decodeToFile(req.body.footer),
