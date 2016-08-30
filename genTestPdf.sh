@@ -5,7 +5,7 @@ footer=$(echo "<html>Lorem ipsum</html>" | base64)
 
 curl -vvv -H "Content-Type: application/json" -X POST -d \
     '{"contents": "'"$content"'",
-      "token": "travisci-test123456789",
+      "token": "travisci",
       "options": {
         "margin-top": "20",
         "margin-left": "20",
@@ -13,4 +13,4 @@ curl -vvv -H "Content-Type: application/json" -X POST -d \
         "margin-bottom": "30"
       },
       "footer": "'"$footer"'"}' \
-    http://localhost:80 -o test.pdf
+    http://localhost -o -

@@ -17,7 +17,7 @@ describe "PDF API", () ->
     expect(response).to.have.status(401)
 
   it "should answer with 200 OK on valid token", () ->
-    json = { token: "travisci-test123456789", };
+    json = { token: "travisci", };
     response = chakram.post("http://localhost", json)
     expect(response).to.have.status(200)
     expect(response).to.have.header("content-type", /pdf/)
