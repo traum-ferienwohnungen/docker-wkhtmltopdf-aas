@@ -1,9 +1,7 @@
 sudo: required
+dist: trusty
 
-language: python
-
-python:
-  - "2.7"
+language: node_js
 
 services:
   - docker
@@ -22,6 +20,4 @@ script:
   - bash test.sh
   - pdftotext -layout test.pdf - | grep -q "Hello World"
   - pdftotext -layout test.pdf - | grep -q "Lorem ipsum"
-  - bash -c '! pdftotext -layout test.pdf - | grep -q "False"'
   - mocha --compilers coffee:coffee-script/register test.coffee
-  - python test.py
