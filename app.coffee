@@ -1,5 +1,6 @@
 { BAD_REQUEST, UNAUTHORIZED } = require 'http-status-codes'
-{ spawn } = require 'child_process'
+{ spawn } = require 'child-process-promise'
+promisePipe = require "promisepipe"
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
 parallel = require 'bluebird'
@@ -30,13 +31,11 @@ app.post '/', bodyParser.json(), (req, res) ->
   parallel.join tmpWrite('', '.pdf'), decodeToFile(req.body.footer),
   decodeToFile(req.body.contents), (output, footer, content) ->
     # combine arguments and call pdf compiler
-    exec = spawn 'wkhtmltopdf', (argumentize(req.body.options)
+    spawn 'wkhtmltopdf', (argumentize(req.body.options)
       .concat(['--footer-html', footer], [content, output]))
-    exec.on 'close', (code) ->
-      res.setHeader('Content-type', 'application/pdf')
-      stream = fs.createReadStream(output)
+    .then (result) ->
       # send pdf to client
-      stream.on 'open', () -> stream.pipe(res)
-      stream.on 'error', (err) -> res.end(err)
+      res.setHeader('Content-type', 'application/pdf')
+      promisePipe(fs.createReadStream(output), res)
 
 app.listen process.env.PORT or 5555
