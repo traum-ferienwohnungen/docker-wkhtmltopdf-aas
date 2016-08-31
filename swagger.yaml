@@ -1,0 +1,62 @@
+swagger: '2.0'
+info:
+  version: '0.5.1'
+  title: PDF Service
+  description: A PDF Serice API that renders HTML templates to PDF
+  contact:
+    name: Fabian Beuke
+    email: beuke@traum-ferienwohnungen.de
+  license:
+    name: BSD 3-Clause
+    url: https://opensource.org/licenses/BSD-3-Clause
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+paths:
+  /:
+    get:
+      description: Returns Status of the Service
+      operationId: getStatus
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: service is up an running
+    post:
+      description: Creates a new PDF
+      operationId: getPDF
+      produces:
+        - application/pdf
+      parameters:
+        - name: pdf
+          in: body
+          description: HTML to convert to PDF
+          required: true
+          schema:
+            $ref: '#/definitions/pdf'
+      responses:
+        '200':
+          description: OK PDF response
+        '400':
+          description: BAD_REQUEST invalid arguments
+        '401':
+          description: UNAUTHORIZED wrong token
+definitions:
+  pdf:
+    type: object
+    required:
+      - token
+      - html
+    properties:
+      token:
+        type: string
+      html:
+        type: string
+        format: byte # base64
+      footer:
+        type: string
+        format: byte # base64
+      options:
+        type: string
