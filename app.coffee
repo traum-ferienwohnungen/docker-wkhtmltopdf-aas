@@ -1,18 +1,18 @@
 { BAD_REQUEST, UNAUTHORIZED } = require 'http-status-codes'
-prometheusMetrics = require("express-prom-bundle")()
+prometheusMetrics = require 'express-prom-bundle'
 { spawn } = require 'child-process-promise'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
 parallel = require 'bluebird'
-app = require('express')()
+express = require 'express'
 _ = require 'lodash'
 fs = require 'fs'
+app = express()
 
-app.use(prometheusMetrics)
+app.use prometheusMetrics()
 
-app.get '/', (req, res) ->
-  res.send 'service is up an running'
+app.use '/', express.static(__dirname + '/documentation')
 
 app.post '/', bodyParser.json(), (req, res) ->
   if req.body.token != process.env.API_TOKEN
@@ -39,7 +39,7 @@ app.post '/', bodyParser.json(), (req, res) ->
     .then (result) ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
-    .catch (err) ->
+    .catch ->
       res.send BAD_REQUEST, 'invalid arguments'
 
 app.listen process.env.PORT or 5555
