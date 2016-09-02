@@ -1,13 +1,15 @@
 { BAD_REQUEST, UNAUTHORIZED } = require 'http-status-codes'
+prometheusMetrics = require("express-prom-bundle")()
 { spawn } = require 'child-process-promise'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
 parallel = require 'bluebird'
-express = require 'express'
+app = require('express')()
 _ = require 'lodash'
 fs = require 'fs'
-app = express()
+
+app.use(prometheusMetrics)
 
 app.get '/', (req, res) ->
   res.send 'service is up an running'
@@ -17,7 +19,7 @@ app.post '/', bodyParser.json(), (req, res) ->
     return res.send UNAUTHORIZED, 'wrong token'
 
   decode = (base64) ->
-    (Buffer.from base64, 'base64').toString 'ascii' if base64?
+    Buffer.from(base64, 'base64').toString 'ascii' if base64?
 
   decodeToFile = (content) ->
     tmpWrite decode(content), '.html'
@@ -35,8 +37,8 @@ app.post '/', bodyParser.json(), (req, res) ->
     spawn 'wkhtmltopdf', (argumentize(req.body.options)
       .concat(['--footer-html', footer], [content, output]))
     .then (result) ->
-      res.setHeader('Content-type', 'application/pdf')
-      promisePipe(fs.createReadStream(output), res)
+      res.setHeader 'Content-type', 'application/pdf'
+      promisePipe fs.createReadStream(output), res
     .catch (err) ->
       res.send BAD_REQUEST, 'invalid arguments'
 
