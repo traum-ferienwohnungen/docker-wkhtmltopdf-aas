@@ -15,7 +15,7 @@ app.get '/', (req, res) ->
   res.send 'service is up an running'
 
 app.post '/', bodyParser.json(), (req, res) ->
-  if not req.body.token? or req.body.token != process.env.API_TOKEN
+  if req.body.token != process.env.API_TOKEN
     return res.send UNAUTHORIZED, 'wrong token'
 
   decode = (base64) ->
@@ -26,7 +26,7 @@ app.post '/', bodyParser.json(), (req, res) ->
 
   # compile options to arguments
   argumentize = (options) ->
-    return [] if not options?
+    return [] unless options?
     _.flatMap options, (_,k) -> ['--'+k, options[k]]
 
   # async parallel file creations
