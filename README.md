@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![Code Climate](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/gpa.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![Issue Count](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/issue_count.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
+[![bitHound Overall Score](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![](https://images.microbadger.com/badges/image/traumfewo/docker-wkhtmltopdf-aas.svg)](http://microbadger.com/images/traumfewo/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a web service.
@@ -21,10 +22,6 @@ docker run -d -e API_TOKEN='your-secret-api-token' -p 127.0.0.1:80:5555
 Take a note of the public port number where docker binds to.
 
 ## Using the webservice via JSON API
-
-When passing our settings we omit the double dash "--" at the start of the option.
-For documentation on what options are available, visit http://wkhtmltopdf.org/usage/wkhtmltopdf.txt
-
 #### Python example
 
 ```python
