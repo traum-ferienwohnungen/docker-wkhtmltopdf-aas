@@ -13,11 +13,7 @@ before_install:
   - sudo npm install chakram
   - docker build -t pdf-service .
   - docker run -d -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
-  - pip install requests
 
 script:
   - docker ps | grep -q pdf-service
-  - bash genTestPdf.sh > test.pdf
-  - pdftotext -layout test.pdf - | grep -q "Hello World"
-  - pdftotext -layout test.pdf - | grep -q "Lorem ipsum"
   - mocha --compilers coffee:coffee-script/register test.coffee
