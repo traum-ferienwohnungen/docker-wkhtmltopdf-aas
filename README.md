@@ -1,13 +1,14 @@
-# docker-wkhtmltopdf-aas 
+# docker-wkhtmltopdf-aas
 [![Build Status](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![Code Climate](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/gpa.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![Issue Count](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/issue_count.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
+[![dependencies Status](https://david-dm.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/status.svg)](https://david-dm.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![bitHound Overall Score](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![](https://images.microbadger.com/badges/image/traumfewo/docker-wkhtmltopdf-aas.svg)](http://microbadger.com/images/traumfewo/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a web service.
 
-This image is based on the 
+This image is based on the
 [wkhtmltopdf container](https://hub.docker.com/r/traumfewo/docker-wkhtmltopdf).
 
 ## Running the service
@@ -33,11 +34,11 @@ data = {
     'contents': open('/file/to/convert.html').read().encode('base64'),
     'token': 'your-secret-api-token',
     'options': {
-        'margin-top': '6', 
-        'margin-left': '6', 
-        'margin-right': '6', 
-        'margin-bottom': '6', 
-        'page-width': '105mm', 
+        'margin-top': '6',
+        'margin-left': '6',
+        'margin-right': '6',
+        'margin-bottom': '6',
+        'page-width': '105mm',
         'page-height': '40mm'
     }
 }
@@ -87,10 +88,10 @@ echo curl_exec($ch);
 
 ## Security
 
-This service exposes two ports 5555 and 9191. The Port 9191 should be only available internally (e.g. 127.0.0.1) since there is no api token / security mechanism for prometheus metrics yet. The Port 5555 is secured by an api token and can therefore be public (0.0.0.0).
+This service exposes two ports 5555 and 9191. The Port 9191 should be only available internally (e.g. 127.0.0.1) since there is no api token / security mechanism for prometheus metrics yet. The API is secured by an api token and can therefore be public (0.0.0.0).
 
 ## Bugs and questions
 
-The development of the container takes place on 
+The development of the container takes place on
 [Github](https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas). If you
 have a question or a bug report to file, you can report as a github issue.
