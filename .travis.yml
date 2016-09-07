@@ -1,24 +1,19 @@
 sudo: required
+dist: trusty
 
-language: python
-
-python:
-  - "2.7"
+language: node_js
 
 services:
   - docker
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y poppler-utils bash
-  - docker build -t test-service .
-  - docker run -d -e API_TOKEN='travisci-test123456789' -p 127.0.0.1:80:5555 --name test-service test-service
-  - pip install requests
+  - sudo apt-get install -y poppler-utils bash npm
+  - sudo npm install -g mocha coffee-script
+  - sudo npm install chakram
+  - docker build -t pdf-service .
+  - docker run -d -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
 
 script:
-  - docker ps | grep -q test-service
-  - bash test.sh
-  - pdftotext -layout test.pdf - | grep -q "Hello World"
-  - pdftotext -layout test.pdf - | grep -q "Lorem ipsum"
-  - bash -c '! pdftotext -layout test.pdf - | grep -q "False"'
-  - python test.py
+  - docker ps | grep -q pdf-service
+  - mocha --compilers coffee:coffee-script/register test.coffee
