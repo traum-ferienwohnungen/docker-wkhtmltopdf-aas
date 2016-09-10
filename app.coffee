@@ -1,6 +1,7 @@
-{ BAD_REQUEST, UNAUTHORIZED } = require 'http-status-codes'
+{BAD_REQUEST, UNAUTHORIZED} = require 'http-status-codes'
 prometheusMetrics = require 'express-prom-bundle'
-{ spawn } = require 'child-process-promise'
+{spawn} = require 'child-process-promise'
+status = require 'express-status-monitor'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
@@ -11,8 +12,8 @@ _ = require 'lodash'
 fs = require 'fs'
 app = express()
 
+app.use status()
 app.use prometheusMetrics()
-
 app.use '/', express.static(__dirname + '/documentation')
 
 app.post '/', bodyParser.json(), (req, res) ->

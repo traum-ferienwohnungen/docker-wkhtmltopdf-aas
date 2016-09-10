@@ -41,7 +41,8 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
     res = chakram.post api, token: "travisci"
     expect(res).to.have.header "content-type", /pdf/
 
-  it "should answer with PDF containing contents and footer on valid token, contents and footer", ->
+  it "should answer with PDF containing
+  contents and footer on valid token, contents and footer", ->
     content = new Buffer("<html>Hello World</html>").toString 'base64'
     footer = new Buffer("<html>Lorem ipsum</html>").toString 'base64'
     json = token: "travisci", contents: "#{content}", footer: "#{footer}"

@@ -10,9 +10,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
-ADD app.coffee /
-ADD package.json /
-ADD swagger.yaml /
+COPY app.coffee /
+COPY package.json /
+COPY swagger.yaml /
 
 WORKDIR /
 
