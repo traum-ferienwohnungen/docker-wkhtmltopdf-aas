@@ -31,5 +31,11 @@
     "temp-write": "^2.1.0",
     "tempfile": "^1.1.1",
     "textract": "^2.0.0"
+  },
+  "devDependencies": {
+    "chakram": "^1.5.0",
+    "coffee-coverage": "^1.0.1",
+    "istanbul": "^0.4.5",
+    "supertest": "^2.0.0"
   }
 }

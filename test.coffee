@@ -3,9 +3,11 @@ Promise = require 'bluebird'
 writeFile = Promise.promisify require('fs').writeFile
 textract = Promise.promisify require('textract').fromFileWithPath
 expect = chakram.expect
+app = require("./app.coffee")
+supertest = require("supertest")(app)
 api = "http://localhost"
 
-describe "PDF API", ->
+describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
 
   it "should answer with 200 OK on plain get request", ->
     res = chakram.get api
@@ -61,3 +63,33 @@ describe "PDF API", ->
     res = chakram.post api, json
     expect(res).to.have.status 400
     expect(res).to.have.not.header "content-type", /pdf/
+
+describe "PDF SERVICE Functional Code Coverage Tests", ->
+  it "cover documentation", ->
+    supertest
+      .get("/") # documentation will be build in the docker container
+      .expect(404) # so it is not available by default
+
+  it "cover valid pdf generation", ->
+    content = new Buffer("<html>Hello World</html>").toString 'base64'
+    footer = new Buffer("<html>Lorem ipsum</html>").toString 'base64'
+    json = token: "travisci", contents: "#{content}", footer: "#{footer}"
+    supertest
+    .post("/")
+    .type('json')
+    .send(json)
+    .expect(200)
+
+  it "cover invalid token", ->
+    supertest
+    .post("/")
+    .type('json')
+    .send({token: "invalid"})
+    .expect(401)
+
+  it "cover invalid arguments", ->
+    supertest
+    .post("/")
+    .type('json')
+    .send({token: "travisci", options: "invalid"})
+    .expect(400)

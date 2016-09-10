@@ -2,18 +2,34 @@ sudo: required
 dist: trusty
 
 language: node_js
+node_js:
+  - "6.1"
+
+cache:
+  directories:
+    - node_modules
 
 services:
   - docker
 
+addons:
+  code_climate:
+    repo_token: 9f540c85650543fb2a8265032f9b15963b527ae3c66ae359e209ea6dcb745823
+
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y poppler-utils bash npm
-  - sudo npm install -g mocha coffee-script
-  - sudo npm install chakram
+  - sudo apt-get install -y poppler-utils bash npm xfonts-75dpi
+  - wget -q http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
+  - sudo dpkg -i wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
+  - sudo npm install -g mocha coffee-script ibrik codeclimate-test-reporter
+  - npm install
+  - export API_TOKEN=travisci
   - docker build -t pdf-service .
   - docker run -d -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
+  - docker ps | grep -q pdf-service
 
 script:
-  - docker ps | grep -q pdf-service
-  - mocha --compilers coffee:coffee-script/register test.coffee
+  - ibrik cover _mocha --reporter spec -- test.coffee
+
+after_script:
+  - if [ $TRAVIS_BRANCH = 'master' ]; then codeclimate-test-reporter < coverage/lcov.info; fi
