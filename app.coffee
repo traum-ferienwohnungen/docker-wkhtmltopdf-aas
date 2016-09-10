@@ -8,12 +8,14 @@ tmpWrite = require 'temp-write'
 tmpFile = require 'tempfile'
 parallel = require 'bluebird'
 express = require 'express'
+log = require 'morgan'
 _ = require 'lodash'
 fs = require 'fs'
 app = express()
 
 app.use status()
 app.use prometheusMetrics()
+app.use log('combined')
 app.use '/', express.static(__dirname + '/documentation')
 
 app.post '/', bodyParser.json(), (req, res) ->
