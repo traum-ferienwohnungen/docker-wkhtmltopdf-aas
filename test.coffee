@@ -49,7 +49,9 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
     chakram.post api, json, {encoding: 'binary'}
     .then (res) -> writeFile 'test.pdf', res.body, 'binary'
     .then -> textract 'test.pdf'
-    .then (text) -> expect(text).to.contain "Hello World"
+    .then (text) ->
+      expect(text).to.contain "Hello World"
+      expect(text).to.contain "Lorem ipsum"
 
   it "should answer with 400 BAD_REQUEST on shell injection", ->
     json = token: "travisci",
