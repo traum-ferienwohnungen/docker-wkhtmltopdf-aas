@@ -7,7 +7,7 @@ info:
     name: Fabian Beuke
     email: beuke@traum-ferienwohnungen.de
   license:
-    name: BSD 3-Clause
+    name: BSD-3-Clause
     url: https://opensource.org/licenses/BSD-3-Clause
 basePath: /
 schemes:

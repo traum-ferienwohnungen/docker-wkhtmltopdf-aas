@@ -1,17 +1,18 @@
 {
   "name": "docker-wkhtmltopdf-aas",
   "version": "0.5.1",
-  "description": "",
+  "description": "A PDF Serice API that renders HTML templates to PDF",
+  "author": "Fabian Beuke",
   "main": "app.coffee",
+  "license": "BSD-3-Clause",
   "scripts": {
-    "start": "forever -c coffee app.coffee"
+    "start": "forever -c coffee app.coffee",
+    "test": "ibrik cover _mocha --reporter spec -- test.coffee"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.git"
   },
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues"
   },
@@ -23,19 +24,17 @@
     "express": "^4.14.0",
     "express-prom-bundle": "^1.1.6",
     "express-status-monitor": "^0.1.2",
-    "forever": "",
+    "forever": "^0.15.2",
     "fs": "0.0.2",
     "http-status-codes": "^1.0.6",
     "lodash": "^4.15.0",
     "morgan": "^1.7.0",
-    "nodemon": "",
     "promisepipe": "^1.0.1",
     "temp-write": "^2.1.0",
     "tempfile": "^1.1.1"
   },
   "devDependencies": {
     "chakram": "^1.5.0",
-    "istanbul": "^0.4.5",
     "supertest": "^2.0.0",
     "textract": "^2.0.0"
   }
