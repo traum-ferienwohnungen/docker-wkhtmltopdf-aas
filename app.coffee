@@ -25,8 +25,7 @@ app.post '/', bodyParser.json(), (req, res) ->
   decode = (base64) ->
     Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
-  decodeToFile = (content...) ->
-    _.map content, (_) -> tmpWrite decode(_), '.html'
+  decodeWrite = _.flow(decode, _.partialRight tmpWrite, '.html')
 
   # compile options to arguments
   argumentize = (options) ->
@@ -35,7 +34,8 @@ app.post '/', bodyParser.json(), (req, res) ->
 
   # async parallel file creations
   parallel.join tmpFile('.pdf'),
-  decodeToFile(req.body.footer, req.body.contents)...,
+  decodeWrite(req.body.footer),
+  decodeWrite(req.body.contents),
   (output, footer, content) ->
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
