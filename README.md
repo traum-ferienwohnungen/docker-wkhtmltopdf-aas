@@ -11,11 +11,17 @@
 wkhtmltopdf in a docker container as a rest api web service.<br>
 This image is based on the [wkhtmltopdf container](https://hub.docker.com/r/traumfewo/docker-wkhtmltopdf).
 
+## Live demo
+
+[https://docker-wkhtmltopdf-aas.herokuapp.com](https://docker-wkhtmltopdf-aas.herokuapp.com)<br>
+Token: travisci
+
+
 ## Running the service
 
-
-```sh
-docker run -d -e API_TOKEN='your-secret-api-token' -p 127.0.0.1:80:5555
+```bash
+docker build -t pdf-service .
+docker run -t -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 pdf-service
 ```
 
 ## Using the webservice via JSON API
@@ -73,13 +79,6 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 echo curl_exec($ch);
 
 ```
-## Philosophy
-This Service follows the following architectual design principles
-- horizontal scalability, be stateless
-- don't reeinvent the wheel, use libraries
-- start testing early, keep 100% code coverage
-- keep it simple stupid (kiss), few files, few sloc, no stuff
-- high performance via non blocking asynchronous code
 
 ## Features
 
@@ -124,6 +123,7 @@ nodejs_memory_heap_used_bytes 22794784
 ```
 
 ## Security
+
 The API (PDF generation) is secured by an api token and can therefore be public hosted. The metrics, status and documentation are not protected by the api token (disable or protect them in case you need it). Keep in mind that you should always use https for communication with the service.
 
 ## Tests
@@ -138,7 +138,16 @@ $ npm install
 $ npm test
 ```
 
+## Philosophy
+This Service follows the following architectual design principles
+- horizontal scalability, be stateless
+- don't reeinvent the wheel, use libraries
+- start testing early, keep 100% code coverage
+- keep it simple stupid (kiss), few files, few sloc, no stuff
+- high performance via non blocking asynchronous code
+
 ## Contributing
+
 Issues, pull requests and questions are welcome.<br>
 The development of the container takes place on
 [Github](https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues).<br>If you have a question or a bug report to file, you can report as a github issue.

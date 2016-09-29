@@ -2,8 +2,9 @@ sudo: required
 dist: trusty
 
 language: node_js
+
 node_js:
-  - "6.1"
+  - '6.1'
 
 cache:
   directories:
@@ -30,3 +31,12 @@ before_install:
 
 after_script:
   - if [ $TRAVIS_BRANCH = 'master' ]; then codeclimate-test-reporter < coverage/lcov.info; fi
+  - wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+  - heroku plugins:install heroku-container-registry
+  - echo "machine api.heroku.com login ${HEROKU_EMAIL} password ${HEROKU_AUTH_TOKEN}" >> ${HOME}/.netrc
+  - chmod 0600 ${HOME}/.netrc
+  - docker login --email=_ --username=_ --password=$(heroku auth:token) registry.heroku.com
+  - sed -i '/ENTRYPOINT/d' Dockerfile # heroku needs
+  - echo 'ENTRYPOINT ["",""]' >> Dockerfile # default ENTRYPOINT
+  - echo 'CMD ["npm","start"]' >> Dockerfile # and CMD defined
+  - heroku container:push web --app docker-wkhtmltopdf-aas

@@ -29,4 +29,4 @@ RUN node --version && \
     npm --version && \
     coffee --version
 
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT ["npm", "start"]
