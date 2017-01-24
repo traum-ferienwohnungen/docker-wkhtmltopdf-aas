@@ -36,7 +36,4 @@ after_script:
   - echo "machine api.heroku.com login ${HEROKU_EMAIL} password ${HEROKU_AUTH_TOKEN}" >> ${HOME}/.netrc
   - chmod 0600 ${HOME}/.netrc
   - docker login --email=_ --username=_ --password=$(heroku auth:token) registry.heroku.com
-  - sed -i '/ENTRYPOINT/d' Dockerfile # heroku needs
-  - echo 'ENTRYPOINT ["",""]' >> Dockerfile # default ENTRYPOINT
-  - echo 'CMD ["npm","start"]' >> Dockerfile # and CMD defined
   - heroku container:push web --app docker-wkhtmltopdf-aas

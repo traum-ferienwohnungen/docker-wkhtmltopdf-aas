@@ -9,6 +9,10 @@
     "start": "forever -c coffee app.coffee",
     "test": "ibrik cover _mocha --reporter spec -- test.coffee"
   },
+  "engines" : {
+    "node" : ">=6",
+     "//": "base64 function does not work on lower"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.git"
