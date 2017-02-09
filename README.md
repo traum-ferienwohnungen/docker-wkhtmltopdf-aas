@@ -8,20 +8,21 @@
 [![bitHound Overall Score](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
 [![](https://images.microbadger.com/badges/image/traumfewo/docker-wkhtmltopdf-aas.svg)](http://microbadger.com/images/traumfewo/docker-wkhtmltopdf-aas)
 
-wkhtmltopdf in a docker container as a rest api web service.<br>
-This image is based on the [wkhtmltopdf container](https://hub.docker.com/r/traumfewo/docker-wkhtmltopdf).
+wkhtmltopdf in a docker container as a rest api web service.
 
 ## Live demo
 
 [https://docker-wkhtmltopdf-aas.herokuapp.com](https://docker-wkhtmltopdf-aas.herokuapp.com)<br>
-Token: travisci
+Token: travisci<br>
+User: gooduser<br>
+Pass: secretpassword
 
 
 ## Running the service
 
 ```bash
 docker build -t pdf-service .
-docker run -t -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 pdf-service
+docker run -t -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
 ```
 
 ## Using the webservice via JSON API
@@ -30,7 +31,7 @@ docker run -t -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 pdf-service
 ```python
 import json
 import requests
-url = 'http://<docker_host>:<port>/'
+url = 'https://"+user+":"+pass+"@<docker_host>:<port>/'
 data = {
     'contents': open('/file/to/convert.html').read().encode('base64'),
     'token': 'your-secret-api-token',
@@ -61,11 +62,11 @@ curl -vvv -H "Content-Type: application/json" -X POST -d \
         "margin-bottom": "30"
       },
       "footer": "'"$footer"'"}' \
-http://<docker_host>:<port> -o OUTPUT_NAME.pdf
+https://"+user+":"+pass+"@<docker_host>:<port> -o OUTPUT_NAME.pdf
 ```
 #### PHP example
 ```php
-$url = 'http://<docker_host>:<port>/';
+$url = 'https://"+user+":"+pass+"@<docker_host>:<port>/';
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
@@ -124,18 +125,20 @@ nodejs_memory_heap_used_bytes 22794784
 
 ## Security
 
-The API (PDF generation) is secured by an api token and can therefore be public hosted. The metrics, status and documentation are not protected by the api token (disable or protect them in case you need it). Keep in mind that you should always use https for communication with the service.
+The API (PDF generation) is secured by an API token and can therefore be public hosted. The metrics, status and documentation are protected by basic access authentication. Keep in mind that the basic access authentication mechanism provides no confidentiality protection for the transmitted credentials. The credentials are only base64 encoded, but not encrypted or hashed in any way. The usage of HTTPS is therefore mandatory.
 
 ## Tests
 
-  To run the test suite, first setup the docker container and install the dependencies, then run `npm test`:
+To run the test suite, first setup the docker container and install the dependencies, then run `npm test`:
 
 ```bash
-$ docker build -t pdf-service .
-$ docker run -t -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 pdf-service
-$ export API_TOKEN=travisci
-$ npm install
-$ npm test
+docker build -t pdf-service .
+docker run -t -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
+export API_TOKEN=travisci
+export USER=gooduser
+export PASS=secretpassword
+npm install
+npm test
 ```
 
 ## Philosophy
@@ -144,13 +147,13 @@ This Service follows the following architectual design principles
 - don't reeinvent the wheel, use libraries
 - start testing early, keep 100% code coverage
 - keep it simple stupid (kiss), few files, few sloc, no stuff
-- high performance via non blocking asynchronous code
+- high performance via non blocking functional asynchronous code
 
 ## Contributing
 
 Issues, pull requests and questions are welcome.<br>
 The development of the container takes place on
-[Github](https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues).<br>If you have a question or a bug report to file, you can report as a github issue.
+[Github](https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues).<br>If you have a question or a bug report to file, you can report as a Github issue.
 
 
 ### Pull Requests
