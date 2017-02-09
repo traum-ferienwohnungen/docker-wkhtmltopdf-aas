@@ -5,7 +5,9 @@ textract = Promise.promisify require('textract').fromFileWithPath
 expect = chakram.expect
 app = require("./app.coffee")
 supertest = require("supertest")(app)
-api = "http://localhost"
+user = 'gooduser'
+pass = 'secretpassword'
+api = "http://"+user+":"+pass+"@127.0.0.1:80"
 
 describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
 
@@ -71,6 +73,7 @@ describe "PDF SERVICE Functional Code Coverage Tests", ->
   it "cover documentation", ->
     supertest
       .get("/") # documentation will be build in the docker container
+      .auth(user, pass)
       .expect(404) # so it is not available by default
 
   it "cover valid pdf generation", ->
@@ -79,6 +82,7 @@ describe "PDF SERVICE Functional Code Coverage Tests", ->
     json = token: "travisci", contents: "#{content}", footer: "#{footer}"
     supertest
     .post("/")
+    .auth(user, pass)
     .type('json')
     .send(json)
     .expect(200)
@@ -86,6 +90,7 @@ describe "PDF SERVICE Functional Code Coverage Tests", ->
   it "cover invalid token", ->
     supertest
     .post("/")
+    .auth(user, pass)
     .type('json')
     .send({token: "invalid"})
     .expect(401)
@@ -93,6 +98,7 @@ describe "PDF SERVICE Functional Code Coverage Tests", ->
   it "cover invalid arguments", ->
     supertest
     .post("/")
+    .auth(user, pass)
     .type('json')
     .send({token: "travisci", options: "invalid"})
     .expect(400)

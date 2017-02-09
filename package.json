@@ -30,6 +30,7 @@
     "express-status-monitor": "^0.1.2",
     "forever": "^0.15.2",
     "fs": "0.0.2",
+    "http-auth": "^3.1.1",
     "http-status-codes": "^1.0.6",
     "lodash": "^4.15.0",
     "morgan": "^1.7.0",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "chakram": "^1.5.0",
     "forever": "^0.15.3",
+    "ibrik": "^2.0.0",
     "supertest": "^2.0.0",
     "textract": "^2.0.0"
   }
