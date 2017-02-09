@@ -9,9 +9,9 @@
     "start": "forever -c coffee app.coffee",
     "test": "ibrik cover _mocha --reporter spec -- test.coffee"
   },
-  "engines" : {
-    "node" : ">=6",
-     "//": "base64 function does not work on lower"
+  "engines": {
+    "node": ">=6",
+    "//": "base64 function does not work on lower"
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "chakram": "^1.5.0",
+    "forever": "^0.15.3",
     "supertest": "^2.0.0",
     "textract": "^2.0.0"
   }
