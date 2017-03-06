@@ -47,7 +47,7 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
   contents and footer on valid token, contents and footer", ->
     content = new Buffer("<html>Hello World</html>").toString 'base64'
     footer = new Buffer("<html>Lorem ipsum</html>").toString 'base64'
-    json = token: "travisci", contents: "#{content}", footer: "#{footer}"
+    json = token: "travisci", contents: "#{content}", footer: "#{footer}", options: "disable-smart-shrinking":""
     chakram.post api, json, {encoding: 'binary'}
     .then (res) -> writeFile 'test.pdf', res.body, 'binary'
     .then -> textract 'test.pdf'

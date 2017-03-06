@@ -35,7 +35,9 @@ app.post '/', bodyParser.json(), (req, res) ->
     # compile options to arguments
     argumentize = (options) ->
         return [] unless options?
-        _.flatMap options, (val, key) -> ['--' + key, val]
+        _.flatMap options, (val, key) ->
+          if val then ['--' + key, val]
+          else ['--' + key]
 
     # async parallel file creations
     parallel.join tmpFile('.pdf'),
