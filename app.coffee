@@ -8,11 +8,16 @@ tmpWrite = require 'temp-write'
 tmpFile = require 'tempfile'
 parallel = require 'bluebird'
 express = require 'express'
+auth = require 'http-auth'
 log = require 'morgan'
 _ = require 'lodash'
 fs = require 'fs'
 app = express()
 
+basic = auth.basic {}, (user, pass, cb) =>
+    cb(user == process.env.USER && pass == process.env.PASS)
+
+app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')

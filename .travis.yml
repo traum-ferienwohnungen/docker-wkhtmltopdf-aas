@@ -25,8 +25,10 @@ before_install:
   - sudo npm install -g mocha coffee-script ibrik codeclimate-test-reporter
   - npm install
   - export API_TOKEN=travisci
+  - export USER=gooduser
+  - export PASS=secretpassword
   - docker build -t pdf-service .
-  - docker run -d -e API_TOKEN='travisci' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
+  - docker run -d -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
   - docker ps | grep -q pdf-service
 
 after_script:
