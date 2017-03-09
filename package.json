@@ -1,6 +1,6 @@
 {
   "name": "docker-wkhtmltopdf-aas",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A PDF Serice API that renders HTML templates to PDF",
   "author": "Fabian Beuke",
   "main": "app.coffee",
@@ -28,21 +28,20 @@
     "express": "^4.14.0",
     "express-prom-bundle": "^1.1.6",
     "express-status-monitor": "^0.1.2",
-    "forever": "^0.15.2",
+    "forever": "^0.15.3",
     "fs": "0.0.2",
     "http-auth": "^3.1.1",
     "http-status-codes": "^1.0.6",
     "lodash": "^4.15.0",
     "morgan": "^1.7.0",
-    "promisepipe": "^1.0.1",
-    "temp-write": "^2.1.0",
+    "promisepipe": "^2.0.0",
+    "temp-write": "^3.1.0",
     "tempfile": "^1.1.1"
   },
   "devDependencies": {
     "chakram": "^1.5.0",
-    "forever": "^0.15.3",
     "ibrik": "^2.0.0",
-    "supertest": "^2.0.0",
+    "supertest": "^3.0.0",
     "textract": "^2.0.0"
   }
 }

@@ -13,7 +13,6 @@ wkhtmltopdf in a docker container as a rest api web service.
 ## Live demo
 
 [https://docker-wkhtmltopdf-aas.herokuapp.com](https://docker-wkhtmltopdf-aas.herokuapp.com)<br>
-Token: travisci<br>
 User: gooduser<br>
 Pass: secretpassword
 
@@ -22,7 +21,7 @@ Pass: secretpassword
 
 ```bash
 docker build -t pdf-service .
-docker run -t -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
+docker run -t -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
 ```
 
 ## Using the webservice via JSON API
@@ -34,7 +33,6 @@ import requests
 url = 'https://"+user+":"+pass+"@<docker_host>:<port>/'
 data = {
     'contents': open('/file/to/convert.html').read().encode('base64'),
-    'token': 'your-secret-api-token',
     'options': {
         'margin-right': '20',
         'margin-bottom': '20',
@@ -54,7 +52,6 @@ content=$(echo "<html>Your HTML content</html>" | base64)
 footer=$(echo "<html>Your HTML footer</html>" | base64)
 curl -vvv -H "Content-Type: application/json" -X POST -d \
     '{"contents": "'"$content"'",
-      "token": "your-secret-api-token",
       "options": {
         "margin-top": "20",
         "margin-left": "20",
@@ -73,7 +70,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $body = json_encode([
     'contents' => base64_encode($html),
-    'token' => 'your-secret-api-token',
 ]);
 # print response
 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -125,29 +121,26 @@ nodejs_memory_heap_used_bytes 22794784
 
 ## Security
 
-The API (PDF generation) is secured by an API token and can therefore be public hosted. The metrics, status and documentation are protected by basic access authentication. Keep in mind that the basic access authentication mechanism provides no confidentiality protection for the transmitted credentials. The credentials are only base64 encoded, but not encrypted or hashed in any way. The usage of HTTPS is therefore mandatory.
+The API is protected by basic access authentication. Keep in mind that the basic access authentication mechanism provides no confidentiality protection for the transmitted credentials. The credentials are only base64 encoded, but not encrypted or hashed in any way. The usage of HTTPS is therefore mandatory.
 
 ## Tests
 
-To run the test suite, first setup the docker container and install the dependencies, then run `npm test`:
+In order to run the test suite you need to first setup the docker container, install the deps and run `yarn test`:
 
 ```bash
 docker build -t pdf-service .
-docker run -t -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
-export API_TOKEN=travisci
-export USER=gooduser
-export PASS=secretpassword
-npm install
-npm test
+docker run -t -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
+yarn install
+yarn test
 ```
 
 ## Philosophy
-This Service follows the following architectual design principles
-- horizontal scalability, be stateless
-- don't reeinvent the wheel, use libraries
-- start testing early, keep 100% code coverage
-- keep it simple stupid (kiss), few files, few sloc, no stuff
-- high performance via non blocking functional asynchronous code
+This Service follows the following design principles
+- horizontal scalability -> stateless
+- don't reeinvent the wheel -> libraries
+- high quality -> 100% code coverage
+- keep it simple stupid (kiss) -> few files, few sloc, no stuff
+- high performance -> non blocking functional asynchronous code
 
 ## Contributing
 
@@ -158,8 +151,8 @@ The development of the container takes place on
 
 ### Pull Requests
 
- - Fork the repository
- - Make changes
- - If required, write tests covering the new functionality
- - Ensure all tests pass and 100% code coverage is achieved (run `npm test`)
- - Raise pull request
+- fork the repository
+- make changes
+- if required, write tests covering the new functionality
+- ensure all tests pass and 100% code coverage is achieved (run `yarn test`)
+- raise pull request

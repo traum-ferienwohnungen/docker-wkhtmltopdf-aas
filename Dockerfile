@@ -13,15 +13,16 @@ RUN apt-get update && \
 
 RUN npm install -g yarn coffee-script forever bootprint bootprint-openapi
 
-COPY app.coffee /
-COPY package.json /
+# generate documentation from swagger
 COPY swagger.yaml /
-
-RUN yarn install
-
-# Generate Documentation from swagger
 RUN bootprint openapi swagger.yaml documentation && \
     npm uninstall -g bootprint bootprint-openapi
+
+# install dependencies
+COPY package.json /
+RUN yarn install
+
+COPY app.coffee /
 
 EXPOSE 5555
 

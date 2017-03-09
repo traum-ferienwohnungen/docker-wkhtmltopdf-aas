@@ -24,11 +24,9 @@ app.use log('combined')
 app.use '/', express.static(__dirname + '/documentation')
 
 app.post '/', bodyParser.json(), (req, res) ->
-    if req.body.token != process.env.API_TOKEN
-        return res.status(UNAUTHORIZED).send 'wrong token'
 
     decode = (base64) ->
-        Buffer.from(base64, 'base64').toString 'utf8' if base64?
+        new Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
     decodeWrite = _.flow(decode, _.partialRight tmpWrite, '.html')
 
@@ -36,8 +34,8 @@ app.post '/', bodyParser.json(), (req, res) ->
     argumentize = (options) ->
         return [] unless options?
         _.flatMap options, (val, key) ->
-          if val then ['--' + key, val]
-          else ['--' + key]
+            if val then ['--' + key, val]
+            else ['--' + key]
 
     # async parallel file creations
     parallel.join tmpFile('.pdf'),

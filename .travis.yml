@@ -5,6 +5,7 @@ language: node_js
 
 node_js:
   - '6.1'
+  - '7.0'
 
 cache:
   directories:
@@ -24,11 +25,8 @@ before_install:
   - sudo dpkg -i wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
   - "npm install -g mocha coffee-script ibrik codeclimate-test-reporter"
   - "npm install"
-  - export API_TOKEN=travisci
-  - export USER=gooduser
-  - export PASS=secretpassword
   - docker build -t pdf-service .
-  - docker run -d -e API_TOKEN='travisci' -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
+  - docker run -d -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
   - docker ps | grep -q pdf-service
 
 after_script:

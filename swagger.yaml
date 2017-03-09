@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '0.5.1'
+  version: '0.5.2'
   title: PDF Service
   description: A PDF Serice API that renders HTML templates to PDF
   contact:
@@ -42,7 +42,7 @@ paths:
         '400':
           description: BAD_REQUEST invalid arguments
         '401':
-          description: UNAUTHORIZED wrong token
+          description: UNAUTHORIZED on invalid basic auth
 definitions:
   pdf:
     type: object
@@ -50,8 +50,6 @@ definitions:
       - token
       - html
     properties:
-      token:
-        type: string
       html:
         type: string
         format: byte # base64
