@@ -7,7 +7,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "forever -c coffee app.coffee",
-    "test": "ibrik cover _mocha --reporter spec -- test.coffee"
+    "test": "mocha --recursive --compilers coffee:coffee-script/register --require coffee-coverage/register-istanbul test.coffee && istanbul report"
   },
   "engines": {
     "node": ">=6",
@@ -40,7 +40,8 @@
   },
   "devDependencies": {
     "chakram": "^1.5.0",
-    "ibrik": "^2.0.0",
+    "coffee-coverage": "^2.0.1",
+    "istanbul": "^0.4.5",
     "supertest": "^3.0.0",
     "textract": "^2.0.0"
   }
