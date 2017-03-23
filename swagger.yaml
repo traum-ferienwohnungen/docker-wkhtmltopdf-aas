@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '0.5.2'
+  version: '1.0.1'
   title: PDF Service
   description: A PDF Serice API that renders HTML templates to PDF
   contact:
@@ -15,15 +15,16 @@ schemes:
 consumes:
   - application/json
 paths:
+
   /:
     get:
-      description: Returns Status of the Service
+      description: Returns this auto generated documentation
       operationId: getStatus
       produces:
         - text/html
       responses:
         '200':
-          description: service is up an running
+          description: Service is up an running
     post:
       description: Creates a new PDF
       operationId: getPDF
@@ -43,16 +44,60 @@ paths:
           description: BAD_REQUEST invalid arguments
         '401':
           description: UNAUTHORIZED on invalid basic auth
+
+  /status:
+    get:
+      description: Returns status page with CPU, Mem, AVG Load, Response Time and Requests per Seconds
+      operationId: getStatusMonitor
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: Service is up an running
+        '401':
+          description: UNAUTHORIZED on invalid basic auth
+      security:
+        - basicAuth: []
+
+  /metrics:
+    get:
+      description: Returns a set of default prometheus metrics such as http_request_duration_seconds_bucket
+      operationId: getPrometheusMetrics
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: Service is up an running
+        '401':
+          description: UNAUTHORIZED on invalid basic auth
+      security:
+        - basicAuth: []
+
+  /healthcheck:
+    get:
+      description: Returns health status of the service
+      operationId: getHealth
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: Returns OK and uptime in seconds if service is running
+
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: Basic authentication
+
 definitions:
   pdf:
     type: object
     required:
-      - token
       - html
     properties:
       html:
         type: string
         format: byte # base64
+        description: Service is up an running
       footer:
         type: string
         format: byte # base64
