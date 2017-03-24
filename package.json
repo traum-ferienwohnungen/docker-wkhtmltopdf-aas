@@ -31,6 +31,7 @@
     "express-status-monitor": "^0.1.2",
     "forever": "^0.15.3",
     "fs": "0.0.2",
+    "helmet": "^3.5.0",
     "http-auth": "^3.1.1",
     "http-status-codes": "^1.0.6",
     "lodash": "^4.15.0",

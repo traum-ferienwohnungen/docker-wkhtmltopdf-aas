@@ -1,6 +1,7 @@
 {BAD_REQUEST, UNAUTHORIZED} = require 'http-status-codes'
 prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
+helmet = require 'helmet'
 status = require 'express-status-monitor'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
@@ -17,6 +18,7 @@ app = express()
 basic = auth.basic {}, (user, pass, cb) ->
   cb(user == process.env.USER && pass == process.env.PASS)
 
+app.use helmet()
 app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
