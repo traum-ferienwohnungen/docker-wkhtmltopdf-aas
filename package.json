@@ -1,6 +1,6 @@
 {
   "name": "docker-wkhtmltopdf-aas",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A PDF Serice API that renders HTML templates to PDF",
   "author": "Fabian Beuke",
   "main": "app.coffee",
