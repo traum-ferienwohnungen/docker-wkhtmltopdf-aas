@@ -1,7 +1,5 @@
-{BAD_REQUEST, UNAUTHORIZED} = require 'http-status-codes'
 prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
-helmet = require 'helmet'
 status = require 'express-status-monitor'
 health = require 'express-healthcheck'
 promisePipe = require 'promisepipe'
@@ -11,6 +9,7 @@ tmpFile = require 'tempfile'
 parallel = require 'bluebird'
 express = require 'express'
 auth = require 'http-auth'
+helmet = require 'helmet'
 log = require 'morgan'
 _ = require 'lodash'
 fs = require 'fs'
@@ -54,7 +53,7 @@ app.post '/', bodyParser.json(), (req, res) ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
     .catch ->
-      res.status(BAD_REQUEST).send 'invalid arguments'
+      res.status(BAD_REQUEST = 400).send 'invalid arguments'
 
 app.listen process.env.PORT or 5555
 module.exports = app
