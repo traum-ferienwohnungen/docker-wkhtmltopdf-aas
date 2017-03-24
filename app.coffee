@@ -3,6 +3,7 @@ prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
 helmet = require 'helmet'
 status = require 'express-status-monitor'
+health = require 'express-healthcheck'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
 tmpWrite = require 'temp-write'
@@ -19,11 +20,12 @@ basic = auth.basic {}, (user, pass, cb) ->
   cb(user == process.env.USER && pass == process.env.PASS)
 
 app.use helmet()
+app.use '/healthcheck', health()
+app.use '/', express.static(__dirname + '/documentation')
 app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
-app.use '/', express.static(__dirname + '/documentation')
 
 app.post '/', bodyParser.json(), (req, res) ->
 
