@@ -9,6 +9,7 @@ supertest = require("supertest")(app)
 user = 'gooduser'
 pass = 'secretpassword'
 api = "http://"+user+":"+pass+"@127.0.0.1:80"
+b64 = (s) -> new Buffer(s).toString 'base64'
 
 describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
 
@@ -29,11 +30,11 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
       res = chakram.get api + "/metrics"
       expect(res).to.have.header "content-type", /text/
 
-    it "401 UNAUTHORIZED on plain post request without user and pass", ->
+    it "401 UNAUTHORIZED on empty user and pass", ->
       res = chakram.post "http://127.0.0.1:80"
       expect(res).to.have.status 401
 
-    it "401 UNAUTHORIZED on plain post request on invalid user and pass", ->
+    it "401 UNAUTHORIZED on invalid user and pass", ->
       res = chakram.post "http://"+user+":wrongpass@127.0.0.1:80"
       expect(res).to.have.status 401
 
@@ -45,15 +46,52 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
       res = chakram.post api
       expect(res).to.have.header "content-type", /pdf/
 
-    it "PDF containing contents and footer, contents and footer", ->
-      content = new Buffer("<html>Hello World</html>").toString 'base64'
-      footer = new Buffer("<html>Lorem ipsum</html>").toString 'base64'
-      json = contents: "#{content}", footer: "#{footer}",
-      options: "disable-smart-shrinking":""
+    it "valid PDF content", ->
+      content = b64 "<html>Hello</html>"
+      json = contents: "#{content}"
       chakram.post api, json, {encoding: 'binary'}
-      .then (res) -> writeFile 'test.pdf', res.body, 'binary'
-      .then -> textract 'test.pdf'
+      .then (res) -> writeFile '/tmp/test-content.pdf',
+        res.body, 'binary'
+      .then -> textract '/tmp/test-content.pdf'
       .then (text) ->
+        expect(text).to.contain "Hello"
+
+    it "valid PDF content and header", ->
+      header = b64 "<!DOCTYPE html><html>Bob</html>"
+      content = b64 "<html>Schwammkopf</html>"
+      json = header: "#{header}", contents: "#{content}"
+      chakram.post api, json, {encoding: 'binary'}
+      .then (res) -> writeFile '/tmp/test-content-header.pdf',
+        res.body, 'binary'
+      .then -> textract '/tmp/test-content-header.pdf'
+      .then (text) ->
+        expect(text).to.contain "Bob"
+        expect(text).to.contain "Schwammkopf"
+
+    it "valid PDF content and footer", ->
+      content = b64 "<html>stackoverflow</html>"
+      footer = b64 "<html>stack smashing</html>"
+      json = contents: "#{content}", footer: "#{footer}"
+      chakram.post api, json, {encoding: 'binary'}
+      .then (res) -> writeFile '/tmp/test-content-footer.pdf',
+        res.body, 'binary'
+      .then -> textract '/tmp/test-content-footer.pdf'
+      .then (text) ->
+        expect(text).to.contain "stackoverflow"
+        expect(text).to.contain "stack smashing"
+
+    it "valid PDF containing header, content and footer", ->
+      header = b64 "<!DOCTYPE html><html>Header</html>"
+      content = b64 "<html>Hello World</html>"
+      footer = b64 "<html>Lorem ipsum</html>"
+      json = header: "#{header}", contents: "#{content}",
+      footer: "#{footer}", options: "disable-smart-shrinking":"",
+      "margin-top":"20mm", "header-spacing":"10"
+      chakram.post api, json, {encoding: 'binary'}
+      .then (res) -> writeFile '/tmp/test.pdf', res.body, 'binary'
+      .then -> textract '/tmp/test.pdf'
+      .then (text) ->
+        expect(text).to.contain "Header"
         expect(text).to.contain "Hello World"
         expect(text).to.contain "Lorem ipsum"
 
@@ -75,16 +113,31 @@ describe "PDF SERVICE Functional Code Coverage Tests", ->
     process.env.USER = user
     process.env.PASS = pass
 
+  # documentation will be build in the docker container
+  # so it is not available by default
   it "cover documentation", ->
     supertest
-      .get("/") # documentation will be build in the docker container
+      .get("/")
       .auth(user, pass)
-      .expect(404) # so it is not available by default
+      .expect(404)
 
-  it "cover valid pdf generation", ->
-    content = new Buffer("<html>Hello World</html>").toString 'base64'
-    footer = new Buffer("<html>Lorem ipsum</html>").toString 'base64'
-    json = contents: "#{content}", footer: "#{footer}"
+  # also covers the disable smart shrinking -> option without param
+  it "cover valid content and footer pdf generation", ->
+    content = b64 "<html>Hello World</html>"
+    footer = b64 "<html>Lorem ipsum</html>"
+    json = contents: "#{content}", footer: "#{footer}",
+    options: "disable-smart-shrinking":""
+    supertest
+      .post("/")
+      .auth(user, pass)
+      .type('json')
+      .send(json)
+      .expect(200)
+
+  it "cover valid content and header pdf generation", ->
+    header = b64 "<html>Hello World</html>"
+    content = b64 "<html>Hello World</html>"
+    json = contents: "#{content}", header: "#{header}"
     supertest
       .post("/")
       .auth(user, pass)

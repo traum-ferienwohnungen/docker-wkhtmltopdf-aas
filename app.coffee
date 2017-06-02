@@ -42,13 +42,14 @@ app.post '/', bodyParser.json(), (req, res) ->
 
   # async parallel file creations
   parallel.join tmpFile('.pdf'),
+  decodeWrite(req.body.header),
   decodeWrite(req.body.footer),
   decodeWrite(req.body.contents),
-  (output, footer, content) ->
+  (output, header, footer, content) ->
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
     spawn 'wkhtmltopdf', (argumentize(req.body.options)
-    .concat(['--footer-html', footer], [content, output]))
+    .concat(['--header-html', header], ['--footer-html', footer], [content, output]))
     .then ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
