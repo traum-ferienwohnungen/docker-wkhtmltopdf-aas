@@ -4,9 +4,9 @@ status = require 'express-status-monitor'
 health = require 'express-healthcheck'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
-tmpWrite = require 'temp-write'
-tmpFile = require 'tempfile'
+fileWrite = require 'temp-write'
 parallel = require 'bluebird'
+tmp = require 'tmp-promise'
 express = require 'express'
 auth = require 'http-auth'
 helmet = require 'helmet'
@@ -31,7 +31,10 @@ app.post '/', bodyParser.json(), (req, res) ->
   decode = (base64) ->
     new Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
-  decodeWrite = _.flow(decode, _.partialRight tmpWrite, '.html')
+  tmpWrite = (content) ->
+    tmp.file({postfix: '.html'}).then (f) -> fileWrite content, f.path
+
+  decodeWrite = _.flow(decode, tmpWrite)
 
   # compile options to arguments
   argumentize = (options) ->
@@ -41,7 +44,7 @@ app.post '/', bodyParser.json(), (req, res) ->
       else ['--' + key]
 
   # async parallel file creations
-  parallel.join tmpFile('.pdf'),
+  parallel.join tmp.file({postfix: '.pdf'}),
   decodeWrite(req.body.header),
   decodeWrite(req.body.footer),
   decodeWrite(req.body.contents),
@@ -49,12 +52,13 @@ app.post '/', bodyParser.json(), (req, res) ->
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
     spawn 'wkhtmltopdf', (argumentize(req.body.options)
-    .concat(['--header-html', header], ['--footer-html', footer], [content, output]))
+    .concat(['--header-html', header],
+      ['--footer-html', footer], [content, output.path]))
     .then ->
       res.setHeader 'Content-type', 'application/pdf'
-      promisePipe fs.createReadStream(output), res
-    .catch ->
-      res.status(BAD_REQUEST = 400).send 'invalid arguments'
+      promisePipe fs.createReadStream(output.path), res
+    .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
+    .then -> tmp.setGracefulCleanup()
 
 app.listen process.env.PORT or 5555
 module.exports = app
