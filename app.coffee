@@ -1,10 +1,10 @@
+fileWrite = require 'fs-writefile-promise/lib/node7'
 prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
 status = require 'express-status-monitor'
 health = require 'express-healthcheck'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
-fileWrite = require 'temp-write'
 parallel = require 'bluebird'
 tmp = require 'tmp-promise'
 express = require 'express'
@@ -32,7 +32,7 @@ app.post '/', bodyParser.json(), (req, res) ->
     new Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
   tmpWrite = (content) ->
-    tmp.file({postfix: '.html'}).then (f) -> fileWrite content, f.path
+    tmp.file({template: '/tmp/XXXXXX.html'}).then (f) -> fileWrite f.path, content
 
   decodeWrite = _.flow(decode, tmpWrite)
 
@@ -44,7 +44,7 @@ app.post '/', bodyParser.json(), (req, res) ->
       else ['--' + key]
 
   # async parallel file creations
-  parallel.join tmp.file({postfix: '.pdf'}),
+  parallel.join tmp.file({template: '/tmp/XXXXXX.pdf'}),
   decodeWrite(req.body.header),
   decodeWrite(req.body.footer),
   decodeWrite(req.body.contents),
@@ -58,7 +58,7 @@ app.post '/', bodyParser.json(), (req, res) ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output.path), res
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> tmp.setGracefulCleanup()
+    .then -> _.map _.compact([output.path, header, footer, content]), fs.unlinkSync
 
 app.listen process.env.PORT or 5555
 module.exports = app

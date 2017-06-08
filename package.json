@@ -32,6 +32,7 @@
     "express-status-monitor": "^0.1.2",
     "forever": "^0.15.3",
     "fs": "0.0.2",
+    "fs-writefile-promise": "^2.0.0",
     "helmet": "^3.5.0",
     "http-auth": "^3.1.1",
     "lodash": "^4.15.0",
