@@ -31,8 +31,11 @@ app.post '/', bodyParser.json(), (req, res) ->
   decode = (base64) ->
     new Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
+  tmpFile = (ext) ->
+    tmp.file({dir: '/tmp', postfix: '.' + ext}).then (f) -> f.path
+
   tmpWrite = (content) ->
-    tmp.file({template: '/tmp/XXXXXX.html'}).then (f) -> fileWrite f.path, content
+    tmpFile('html').then (f) -> fileWrite f, content
 
   decodeWrite = _.flow(decode, tmpWrite)
 
@@ -44,7 +47,7 @@ app.post '/', bodyParser.json(), (req, res) ->
       else ['--' + key]
 
   # async parallel file creations
-  parallel.join tmp.file({template: '/tmp/XXXXXX.pdf'}),
+  parallel.join tmpFile('pdf'),
   decodeWrite(req.body.header),
   decodeWrite(req.body.footer),
   decodeWrite(req.body.contents),
@@ -53,12 +56,12 @@ app.post '/', bodyParser.json(), (req, res) ->
     # injection save function 'spawn' goo.gl/zspCaC
     spawn 'wkhtmltopdf', (argumentize(req.body.options)
     .concat(['--header-html', header],
-      ['--footer-html', footer], [content, output.path]))
+      ['--footer-html', footer], [content, output]))
     .then ->
       res.setHeader 'Content-type', 'application/pdf'
-      promisePipe fs.createReadStream(output.path), res
+      promisePipe fs.createReadStream(output), res
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> _.map _.compact([output.path, header, footer, content]), fs.unlinkSync
+    .then -> _.map _.compact([output, header, footer, content]), fs.unlinkSync
 
 app.listen process.env.PORT or 5555
 module.exports = app
