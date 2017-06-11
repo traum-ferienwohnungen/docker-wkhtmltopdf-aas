@@ -24,6 +24,13 @@ docker build -t pdf-service .
 docker run -t -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
 ```
 
+for long payload - long pdf files - you can configure the size limit for the body parser. with `PAYLOAD_LIMIT` env
+```bash
+docker build -t pdf-service .
+docker run -t -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='80mb' -p 127.0.0.1:80:5555 pdf-service
+```
+
+
 ## Using the webservice via JSON API
 #### Python example
 
