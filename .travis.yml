@@ -26,7 +26,7 @@ before_install:
   - "npm install -g mocha coffee-script ibrik codeclimate-test-reporter"
   - "npm install"
   - docker build -t pdf-service .
-  - docker run -d -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
+  - docker run -d -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='50mb' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
   - docker ps | grep -q pdf-service
 
 after_script:

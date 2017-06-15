@@ -11,6 +11,21 @@ pass = 'secretpassword'
 api = "http://"+user+":"+pass+"@127.0.0.1:80"
 b64 = (s) -> new Buffer(s).toString 'base64'
 
+Curl = require( 'node-libcurl' ).Curl
+curl = new Curl()
+
+# this is a big html site result in 29 pdf pages ( bigger than 100 kb )
+testurl = 'http://demo.borland.com/testsite/stadyn_largepagewithimages.html'
+curl.setOpt( 'URL', testurl )
+curl.setOpt( 'FOLLOWLOCATION', true )
+
+bigBody = new Promise((resolve) ->
+  curl.perform()
+  curl.on 'end', ( statusCode, body, headers ) ->
+    resolve(body)
+    this.close()
+)
+
 describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
 
   describe "API should answer with", ->
@@ -55,6 +70,19 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
       .then -> textract '/tmp/test-content.pdf'
       .then (text) ->
         expect(text).to.contain "Hello"
+
+    it "valid PDF with big payload", ->
+      # this test takes a litte bit longer due to big payload
+      this.timeout 5000
+      bigBody.then (b) ->
+        content = b64 b
+        json = contents: "#{content}"
+        chakram.post api, json, {encoding: 'binary'}
+        .then (res) -> writeFile '/tmp/test-content-big.pdf',
+          res.body, 'binary'
+        .then -> textract '/tmp/test-content-big.pdf'
+        .then (text) ->
+          expect(text).to.contain "generated payments were canceled"
 
     it "valid PDF content and header", ->
       header = b64 "<!DOCTYPE html><html>Bob</html>"
