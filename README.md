@@ -24,13 +24,6 @@ docker build -t pdf-service .
 docker run -t -e USER='gooduser' -e PASS='secretpassword' -p 127.0.0.1:80:5555 pdf-service
 ```
 
-for long payload - long pdf files - you can configure the size limit for the body parser. with `PAYLOAD_LIMIT` env
-```bash
-docker build -t pdf-service .
-docker run -t -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='80mb' -p 127.0.0.1:80:5555 pdf-service
-```
-
-
 ## Using the webservice via JSON API
 #### Python example
 
@@ -84,6 +77,11 @@ echo curl_exec($ch);
 
 ```
 
+## Additional Options
+
+#### Payload Size
+
+It might be useful to increase the payload size to allow the generation of larger PDF files in case of errors such as `Error: request entity too large`. You can configure the payload size limit for the body parser by adding the additional `PAYLOAD_LIMIT` environment variable to the `docker run -t ` start command. For instance, set the payload limit to 80 megabyte by adding ` -e PAYLOAD_LIMIT='80mb'`. Please consider that a high payload limit might result in high server resource usage and longer response times.
 ## Features
 
 The containing features are easy to disable in case you don't need them. <br> For example disable prometheus metrics:

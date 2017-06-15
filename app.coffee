@@ -15,7 +15,7 @@ _ = require 'lodash'
 fs = require 'fs'
 app = express()
 
-payload_limit = process.env.PAYLOAD_LIMIT or '50mb'
+payload_limit = process.env.PAYLOAD_LIMIT or '100kb'
 
 basic = auth.basic {}, (user, pass, cb) ->
   cb(user == process.env.USER && pass == process.env.PASS)
@@ -27,10 +27,8 @@ app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
-app.use bodyParser.json({limit: payload_limit})
-app.use bodyParser.urlencoded({limit: payload_limit, extended: true})
 
-app.post '/', bodyParser.json(), (req, res) ->
+app.post '/', bodyParser.json({limit: payload_limit}), (req, res) ->
 
   decode = (base64) ->
     new Buffer.from(base64, 'base64').toString 'utf8' if base64?
