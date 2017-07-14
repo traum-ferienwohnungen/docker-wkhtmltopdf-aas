@@ -53,14 +53,6 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
       res = chakram.post "http://"+user+":wrongpass@127.0.0.1:80"
       expect(res).to.have.status 401
 
-    it "200 OK on valid user and pass", ->
-      res = chakram.post api
-      expect(res).to.have.status 200
-
-    it "content-type pdf on valid user and pass", ->
-      res = chakram.post api
-      expect(res).to.have.header "content-type", /pdf/
-
     it "valid PDF content", ->
       content = b64 "<html>Hello</html>"
       json = contents: "#{content}"
