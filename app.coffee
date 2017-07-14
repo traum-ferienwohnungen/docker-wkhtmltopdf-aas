@@ -2,6 +2,9 @@ fileWrite = require 'fs-writefile-promise/lib/node7'
 prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
 status = require 'express-status-monitor'
+{flow, map, compact, values, flatMap,
+  toPairs, first, last, concat, remove,
+  flatten, negate} = require 'lodash/fp'
 health = require 'express-healthcheck'
 promisePipe = require 'promisepipe'
 bodyParser = require 'body-parser'
@@ -11,7 +14,6 @@ express = require 'express'
 auth = require 'http-auth'
 helmet = require 'helmet'
 log = require 'morgan'
-_ = require 'lodash'
 fs = require 'fs'
 app = express()
 
@@ -28,42 +30,35 @@ app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
 
-app.post '/', bodyParser.json({limit: payload_limit}), (req, res) ->
+app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
 
   decode = (base64) ->
-    new Buffer.from(base64, 'base64').toString 'utf8' if base64?
+    Buffer.from(base64, 'base64').toString 'utf8' if base64?
 
   tmpFile = (ext) ->
-    tmp.file({dir: '/tmp', postfix: '.' + ext}).then (f) -> f.path
+    tmp.file(dir: '/tmp', postfix: '.' + ext).then (f) -> f.path
 
   tmpWrite = (content) ->
-    tmpFile('html').then (f) -> fileWrite f, content
-
-  decodeWrite = _.flow(decode, tmpWrite)
+    tmpFile('html').then (f) -> fileWrite f, content if content?
 
   # compile options to arguments
-  argumentize = (options) ->
-    return [] unless options?
-    _.flatMap options, (val, key) ->
-      if val then ['--' + key, val]
-      else ['--' + key]
+  arg = flow(toPairs, flatMap((i) -> ['--' + first(i), last(i)]), compact)
 
-  # async parallel file creations
   parallel.join tmpFile('pdf'),
-  decodeWrite(req.body.header),
-  decodeWrite(req.body.footer),
-  decodeWrite(req.body.contents),
+  map(flow(decode, tmpWrite), [body.header, body.footer, body.contents])...,
   (output, header, footer, content) ->
+    files = [['--header-html', header],
+             ['--footer-html', footer],
+             [content, output]]
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
-    spawn 'wkhtmltopdf', (argumentize(req.body.options)
-    .concat(['--header-html', header],
-      ['--footer-html', footer], [content, output]))
+    spawn 'wkhtmltopdf', (arg(body.options)
+    .concat(flow(remove(negate(last)), flatten)(files)))
     .then ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> _.map _.compact([output, header, footer, content]), fs.unlinkSync
+    .then -> map fs.unlinkSync, compact([output, header, footer, content])
 
 app.listen process.env.PORT or 5555
 module.exports = app

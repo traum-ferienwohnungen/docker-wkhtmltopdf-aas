@@ -73,7 +73,6 @@ describe "PDF JSON REST API BDD Endpoint Integration Tests", ->
 
     it "valid PDF with big payload", ->
       # this test takes a litte bit longer due to big payload
-      this.timeout 5000
       bigBody.then (b) ->
         content = b64 b
         json = contents: "#{content}"

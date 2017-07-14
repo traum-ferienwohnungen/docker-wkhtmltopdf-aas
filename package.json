@@ -8,7 +8,7 @@
   "scripts": {
     "start": "forever -c coffee app.coffee",
     "docker": "docker build -t pdf-service . && docker run -t -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='50mb' -p 127.0.0.1:80:5555 pdf-service",
-    "test": "mocha --recursive --compilers coffee:coffee-script/register --require coffee-coverage/register-istanbul test.coffee && istanbul report"
+    "test": "mocha --recursive --compilers coffee:coffee-script/register --require coffee-coverage/register-istanbul test.coffee --timeout 5000 && istanbul report"
   },
   "engines": {
     "node": ">=6",
@@ -43,9 +43,9 @@
   },
   "devDependencies": {
     "chakram": "^1.5.0",
-    "node-libcurl": "^1.1.0",
     "coffee-coverage": "^2.0.1",
     "istanbul": "^0.4.5",
+    "node-libcurl": "^1.1.0",
     "supertest": "^3.0.0",
     "textract": "^2.0.0"
   }
