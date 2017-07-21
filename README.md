@@ -1,11 +1,11 @@
 # docker-wkhtmltopdf-aas
 [![License (3-Clause BSD)](https://img.shields.io/badge/license-BSD%203--Clause-brightgreen.svg)](http://opensource.org/licenses/BSD-3-Clause)
-[![Build Status](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
-[![Code Climate](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/gpa.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
-[![Issue Count](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/issue_count.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
-[![Test Coverage](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/coverage.svg)](https://codeclimate.com/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/coverage)
-[![dependencies Status](https://david-dm.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/status.svg)](https://david-dm.org/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
-[![bitHound Overall Score](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Build Status](https://travis-ci.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas.svg?branch=master)](https://travis-ci.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Code Climate](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badges/gpa.svg)](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Issue Count](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badges/issue_count.svg)](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
+[![Test Coverage](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badges/coverage.svg)](https://codeclimate.com/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/coverage)
+[![dependencies Status](https://david-dm.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas/status.svg)](https://david-dm.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
+[![bitHound Overall Score](https://www.bithound.io/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
 [![](https://images.microbadger.com/badges/image/traumfewo/docker-wkhtmltopdf-aas.svg)](http://microbadger.com/images/traumfewo/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a rest api web service.
@@ -151,7 +151,7 @@ This Service follows the following design principles
 
 Issues, pull requests and questions are welcome.<br>
 The development of the container takes place on
-[Github](https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues).<br>If you have a question or a bug report to file, you can report as a Github issue.
+[Github](https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas/issues).<br>If you have a question or a bug report to file, you can report as a Github issue.
 
 
 ### Pull Requests

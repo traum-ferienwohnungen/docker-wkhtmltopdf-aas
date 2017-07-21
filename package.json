@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas.git"
+    "url": "git+https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas.git"
   },
   "bugs": {
-    "url": "https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas/issues"
+    "url": "https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas/issues"
   },
-  "homepage": "https://github.com/Traum-Ferienwohnungen/docker-wkhtmltopdf-aas#readme",
+  "homepage": "https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas#readme",
   "dependencies": {
     "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",
