@@ -14,9 +14,13 @@ cache:
 services:
   - docker
 
-addons:
-  code_climate:
-    repo_token: 9f540c85650543fb2a8265032f9b15963b527ae3c66ae359e209ea6dcb745823
+env:
+  global:
+    - CC_TEST_REPORTER_ID=c705634424a58e3c1f0acdaf16dbfc688397458c6f62c765f3827bacc98a77eb
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
 
 before_install:
   - sudo apt-get -qq update
@@ -30,7 +34,7 @@ before_install:
   - docker ps | grep -q pdf-service
 
 after_script:
-  - if [ $TRAVIS_BRANCH = 'master' ]; then codeclimate-test-reporter < coverage/lcov.info; fi
+  - if [ $TRAVIS_BRANCH = 'master' ]; then ./cc-test-reporter after-build --coverage-input-type lcov coverage/lcov.info; fi
   - wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
   - heroku plugins:install heroku-container-registry
   - echo "machine api.heroku.com login ${HEROKU_EMAIL} password ${HEROKU_AUTH_TOKEN}" >> ${HOME}/.netrc
