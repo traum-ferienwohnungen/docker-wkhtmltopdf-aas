@@ -7,6 +7,7 @@
 [![dependencies Status](https://david-dm.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas/status.svg)](https://david-dm.org/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
 [![bitHound Overall Score](https://www.bithound.io/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badges/score.svg)](https://www.bithound.io/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
 [![](https://images.microbadger.com/badges/image/traumfewo/docker-wkhtmltopdf-aas.svg)](http://microbadger.com/images/traumfewo/docker-wkhtmltopdf-aas)
+[![Known Vulnerabilities](https://snyk.io/test/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas/badge.svg)](https://snyk.io/test/github/traum-ferienwohnungen/docker-wkhtmltopdf-aas)
 
 wkhtmltopdf in a docker container as a rest api web service.
 
