@@ -48,6 +48,6 @@
     "istanbul": "^0.4.5",
     "node-libcurl": "^1.1.0",
     "supertest": "^3.0.0",
-    "textract": "^2.0.0"
+    "textract": "^2.2.0"
   }
 }
