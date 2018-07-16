@@ -1,4 +1,4 @@
-fileWrite = require 'fs-writefile-promise/lib/node7'
+fileWrite = require 'fs-writefile-promise'
 prometheusMetrics = require 'express-prom-bundle'
 {spawn} = require 'child-process-promise'
 status = require 'express-status-monitor'
