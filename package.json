@@ -7,7 +7,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "version": "coffee --version",
-    "start": "while true; do coffee app.coffee; done",
+    "start": "coffee --version; while true; do coffee app.coffee; done",
     "docker": "docker build -t pdf-service . && docker run -t -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='50mb' -p 127.0.0.1:80:5555 pdf-service",
     "test": "nyc --extension .coffee mocha --exit --recursive --compilers coffee:coffee-script/register --require coffee-coverage/register-istanbul test.coffee --timeout 5000 && nyc report --reporter=lcov --extension .coffee",
     "nyc": "nyc",
@@ -25,7 +25,7 @@
     "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",
     "child-process-promise": "^2.1.3",
-    "coffeescript": "^2.4.1",
+    "coffeescript": "2",
     "express": "^4.14.0",
     "express-healthcheck": "^0.1.0",
     "express-prom-bundle": "^3.1.0",

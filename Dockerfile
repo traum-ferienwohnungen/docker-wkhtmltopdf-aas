@@ -32,7 +32,6 @@ RUN wget -q $WK_URL/$WK_PKG     && \
 
 RUN npm install -g    \
     yarn              \
-    coffee-script     \
     forever bootprint \
     bootprint-openapi
 
@@ -54,7 +53,6 @@ COPY app.coffee /
 EXPOSE 5555
 
 RUN node   --version && \
-    npm    --version && \
-    coffee --version
+    npm    --version
 
 CMD ["npm", "start"]
