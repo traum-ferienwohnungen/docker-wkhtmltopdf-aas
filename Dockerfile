@@ -30,11 +30,11 @@ RUN wget -q $WK_URL/$WK_PKG     && \
     dpkg -i $WK_PKG             && \
     rm /usr/local/bin/wkhtmltoimage
 
-RUN npm install -g    \
-    yarn              \
-    coffee-script     \
-    forever bootprint \
-    bootprint-openapi
+RUN npm install -g          \
+    yarn                    \
+    coffee-script           \
+    forever bootprint@1.0.2 \
+    bootprint-openapi@1.1.1
 
 # generate documentation from swagger
 COPY swagger.yaml /
