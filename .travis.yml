@@ -26,8 +26,11 @@ before_script:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install poppler-utils bash xfonts-75dpi xfonts-base
-  - wget -q https://downloads.wkhtmltopdf.org/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
-  - sudo dpkg -i wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
+  - sudo curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
+  - sudo bash nodesource_setup.sh
+  - sudo apt-get install nodejs
+  - wget -q https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb
+  - sudo dpkg -i wkhtmltox_0.12.6-1.focal_amd64.deb
   - yarn install
   - docker build -t pdf-service .
   - docker run -d -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='50mb' -p 127.0.0.1:80:5555 --name pdf-service pdf-service
