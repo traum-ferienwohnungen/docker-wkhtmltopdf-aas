@@ -47,8 +47,8 @@ app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
   parallel.join tmpFile('pdf'),
   map(flow(decode, tmpWrite), [body.header, body.footer, body.contents])...,
   (output, header, footer, content) ->
-    files = [['--header-html', body.header],
-             ['--footer-html', body.footer],
+    files = [['--header-html', header],
+             ['--footer-html', footer],
              [content, output]]
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
