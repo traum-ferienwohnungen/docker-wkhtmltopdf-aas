@@ -18,14 +18,14 @@ fs = require 'fs'
 app = express()
 
 payload_limit = process.env.PAYLOAD_LIMIT or '100kb'
-#
-#basic = auth.basic {}, (user, pass, cb) ->
-#  cb(user == process.env.USER && pass == process.env.PASS)
-#
+
+basic = auth.basic {}, (user, pass, cb) ->
+  cb(user == process.env.USER && pass == process.env.PASS)
+
 app.use helmet()
 app.use '/healthcheck', health()
 app.use '/', express.static(__dirname + '/documentation')
-## app.use auth.connect(basic)
+app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
