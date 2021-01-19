@@ -58,7 +58,7 @@ app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> map fs.unlinkSync, compact([output, header, footer, content])
+    .then -> map fs.unlinkSync, compact([output, body.header, body.header, content])
 
 app.listen process.env.PORT or 5555
 module.exports = app
