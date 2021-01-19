@@ -18,14 +18,14 @@ fs = require 'fs'
 app = express()
 
 payload_limit = process.env.PAYLOAD_LIMIT or '100kb'
-
-basic = auth.basic {}, (user, pass, cb) ->
-  cb(user == process.env.USER && pass == process.env.PASS)
-
+#
+#basic = auth.basic {}, (user, pass, cb) ->
+#  cb(user == process.env.USER && pass == process.env.PASS)
+#
 app.use helmet()
 app.use '/healthcheck', health()
 app.use '/', express.static(__dirname + '/documentation')
-app.use auth.connect(basic)
+## app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
@@ -47,8 +47,8 @@ app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
   parallel.join tmpFile('pdf'),
   map(flow(decode, tmpWrite), [body.header, body.footer, body.contents])...,
   (output, header, footer, content) ->
-    files = [['--header-html', header],
-             ['--footer-html', footer],
+    files = [['--header-html', body.header],
+             ['--footer-html', body.footer],
              [content, output]]
     # combine arguments and call pdf compiler using shell
     # injection save function 'spawn' goo.gl/zspCaC
@@ -58,7 +58,7 @@ app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
       res.setHeader 'Content-type', 'application/pdf'
       promisePipe fs.createReadStream(output), res
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> map fs.unlinkSync, compact([output, body.header, body.header, content])
+    .then -> map fs.unlinkSync, compact([output, header, footer, content])
 
 app.listen process.env.PORT or 5555
 module.exports = app
