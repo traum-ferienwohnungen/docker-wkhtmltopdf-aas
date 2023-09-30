@@ -30,24 +30,18 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x                     \
 RUN apt-get install -y --no-install-recommends nodejs
 
 # Déterminer l'architecture
-RUN ARCHITECTURE=`uname -m` && \
-    if [ "$ARCHITECTURE" = "aarch64" ]; then \
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
         URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_arm64.deb"; \
-    elif [ "$ARCHITECTURE" = "x86_64" ]; then \
+    elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-rc/wkhtmltox_0.12.6-0.20200605.30.rc.faa06fa.focal_amd64.deb"; \
     else \
-        echo "Architecture non supportée"; \
+        echo "Platforme non supportée"; \
         exit 1; \
-    fi && \
-    wget -q $URL -O wkhtmltopdf.deb && \
-    dpkg -i wkhtmltopdf.deb && \
-    rm wkhtmltopdf.deb
-
-RUN wget -q $URL -O wkhtmltopdf.deb
-
-RUN dpkg -i wkhtmltopdf.deb
-
-RUN rm wkhtmltopdf.deb
+    fi; \
+    wget -q $URL -O wkhtmltopdf.deb; \
+    dpkg -i wkhtmltopdf.deb; \
+    rm wkhtmltopdf.deb;
 
 RUN rm /usr/local/bin/wkhtmltoimage
 
