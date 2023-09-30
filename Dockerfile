@@ -21,8 +21,8 @@ RUN apt-get update &&                          \
     xfonts-base  			                   \
     python
 
-ENV WK_URL=https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1 \
-    WK_PKG=wkhtmltox_0.12.6-1.focal_amd64.deb
+ENV WK_URL=https://github.com/wkhtmltopdf/packaging/releases/download/0.12.5-1 \
+    WK_PKG=wkhtmltox_0.12.5-1.focal_amd64.deb
 
 COPY swagger.yaml package.json app.coffee /
 
