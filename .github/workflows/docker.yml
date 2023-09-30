@@ -6,6 +6,10 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+    - name: Get version
+      id: package_info
+      run: |
+        echo "::set-output name=version::$(node -p "require('./package.json').version")"
     - name: Checkout
       uses: actions/checkout@v4
     - name: Login Docker Hub
@@ -36,7 +40,9 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         platforms: linux/arm64, linux/aarch64, linux/amd64
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/docker-wkhtmltopdf-aas:latest
+        tags:  |
+          ${{ secrets.DOCKER_USERNAME }}/docker-wkhtmltopdf-aas:${{ steps.package_info.outputs.version }}
+          ${{ secrets.DOCKER_USERNAME }}/docker-wkhtmltopdf-aas:latest
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
     - name: Verify
