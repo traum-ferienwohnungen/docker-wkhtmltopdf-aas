@@ -1,63 +1,54 @@
-fileWrite = require 'fs-writefile-promise'
-prometheusMetrics = require 'express-prom-bundle'
-{spawn} = require 'child-process-promise'
-status = require 'express-status-monitor'
-{flow, map, compact, values, flatMap,
-  toPairs, first, last, concat, remove,
-  flatten, negate} = require 'lodash/fp'
-health = require 'express-healthcheck'
-promisePipe = require 'promisepipe'
-bodyParser = require 'body-parser'
-parallel = require 'bluebird'
-tmp = require 'tmp-promise'
-express = require 'express'
-auth = require 'http-auth'
-helmet = require 'helmet'
-log = require 'morgan'
-fs = require 'fs'
-app = express()
-
-payload_limit = process.env.PAYLOAD_LIMIT or '100kb'
-
-basic = auth.basic {}, (user, pass, cb) ->
-  cb(user == process.env.USER && pass == process.env.PASS)
-
-app.use helmet()
-app.use '/healthcheck', health()
-app.use '/', express.static(__dirname + '/documentation')
-app.use status()
-app.use prometheusMetrics()
-app.use log('combined')
-
-app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
-
-  decode = (base64) ->
-    Buffer.from(base64, 'base64').toString 'utf8' if base64?
-
-  tmpFile = (ext) ->
-    tmp.file(dir: '/tmp', postfix: '.' + ext).then (f) -> f.path
-
-  tmpWrite = (content) ->
-    tmpFile('html').then (f) -> fileWrite f, content if content?
-
-  # compile options to arguments
-  arg = flow(toPairs, flatMap((i) -> ['--' + first(i), last(i)]), compact)
-
-  parallel.join tmpFile('pdf'),
-  map(flow(decode, tmpWrite), [body.header, body.footer, body.contents])...,
-  (output, header, footer, content) ->
-    files = [['--header-html', header],
-             ['--footer-html', footer],
-             [content, output]]
-    # combine arguments and call pdf compiler using shell
-    # injection save function 'spawn' goo.gl/zspCaC
-    spawn 'wkhtmltopdf', (arg(body.options)
-    .concat(flow(remove(negate(last)), flatten)(files)))
-    .then ->
-      res.setHeader 'Content-type', 'application/pdf'
-      promisePipe fs.createReadStream(output), res
-    .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
-    .then -> map fs.unlinkSync, compact([output, header, footer, content])
-
-app.listen process.env.PORT or 5555
-module.exports = app
+{
+  "name": "docker-wkhtmltopdf-aas",
+  "version": "2.3.0",
+  "description": "A PDF Serice API that renders HTML templates to PDF",
+  "author": "Fabian Beuke",
+  "main": "app.coffee",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "version": "coffee --version",
+    "start": "while true; do coffee app.coffee; done",
+    "docker": "docker build -t pdf-service . && docker run -t -e USER='gooduser' -e PASS='secretpassword' -e PAYLOAD_LIMIT='50mb' -p 127.0.0.1:80:5555 pdf-service",
+    "test": "nyc --extension .coffee mocha --exit --recursive --compilers coffee:coffee-script/register --require coffee-coverage/register-istanbul test.coffee --timeout 5000 && nyc report --reporter=lcov --extension .coffee",
+    "nyc": "nyc",
+    "lint": "coffeelint app.coffee test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas/issues"
+  },
+  "homepage": "https://github.com/traum-ferienwohnungen/docker-wkhtmltopdf-aas#readme",
+  "dependencies": {
+    "bluebird": "^3.4.3",
+    "body-parser": "^1.15.2",
+    "child-process-promise": "^2.1.3",
+    "coffeescript": "^2.4.1",
+    "express": "^4.14.0",
+    "express-healthcheck": "^0.1.0",
+    "express-prom-bundle": "^3.1.0",
+    "express-status-monitor": "1.0.0",
+    "fs": "0.0.2",
+    "fs-writefile-promise": "3.0.0",
+    "helmet": "^3.5.0",
+    "http-auth": "^3.1.1",
+    "lodash": "^4.17.11",
+    "morgan": "^1.7.0",
+    "promisepipe": "^2.0.0",
+    "temp-write": "^3.1.0",
+    "tmp-promise": "^1.0.3"
+  },
+  "devDependencies": {
+    "chakram": "^1.5.0",
+    "codeclimate-test-reporter": "^0.5.0",
+    "coffee-coverage": "^2.0.1",
+    "coffeelint": "^1.16.0",
+    "mocha": "^5.2.0",
+    "node-libcurl": "1.3.3",
+    "nyc": "^14.1.1",
+    "supertest": "^3.0.0",
+    "textract": "^2.2.0"
+  }
+}
