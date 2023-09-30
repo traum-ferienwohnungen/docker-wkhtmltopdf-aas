@@ -30,10 +30,12 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x                     \
     -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh    && \
     rm /tmp/nodesource_setup.sh
 
-RUN apt-get install -y --no-install-recommends nodejs               && \
-    wget -q $WK_URL/$WK_PKG && dpkg -i $WK_PKG && rm $WK_PKG        && \
-    rm /usr/local/bin/wkhtmltoimage                                 && \
-    npm install -g coffeescript forever bootprint bootprint-openapi && \
+RUN apt-get install -y --no-install-recommends nodejs
+
+RUN wget -q $WK_URL/$WK_PKG && dpkg -i $WK_PKG && rm $WK_PKG        && \
+    rm /usr/local/bin/wkhtmltoimage
+
+RUN npm install -g coffeescript forever bootprint bootprint-openapi && \
     bootprint openapi swagger.yaml documentation                    && \
     npm uninstall -g bootprint bootprint-openapi
 
