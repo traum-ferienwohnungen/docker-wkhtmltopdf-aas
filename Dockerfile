@@ -34,7 +34,7 @@ RUN apt-get install -y --no-install-recommends nodejs
 
 RUN wget -q https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
 
-RUN dpkg -i $WK_PKG && rm $WK_PKG        && \
+RUN dpkg -i wkhtmltox_0.12.5-1.focal_amd64.deb && rm wkhtmltox_0.12.5-1.focal_amd64.deb && \
     rm /usr/local/bin/wkhtmltoimage
 
 RUN npm install -g coffeescript forever bootprint bootprint-openapi && \
