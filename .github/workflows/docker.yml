@@ -34,7 +34,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         builder: ${{ steps.buildx.outputs.name }}
-        platforms: linux/arm64, linux/aarch64
+        platforms: linux/arm64, linux/aarch64, linux/amd64
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/imaginaryprototype:latest
         cache-from: type=local,src=/tmp/.buildx-cache
