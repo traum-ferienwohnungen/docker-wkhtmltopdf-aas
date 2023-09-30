@@ -27,7 +27,7 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-    - name: Get Version
+    - name: Get Version of Package
       id: package
       run: |
         echo "wkhtmltopdf_version=$(node -p "require('./package.json').wkhtmltopdf")" >> $GITHUB_EN
