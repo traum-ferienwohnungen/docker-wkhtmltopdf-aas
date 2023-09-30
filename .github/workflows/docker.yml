@@ -36,7 +36,7 @@ jobs:
         builder: ${{ steps.buildx.outputs.name }}
         platforms: linux/arm64, linux/aarch64, linux/amd64
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/imaginaryprototype:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/docker-wkhtmltopdf-aas:latest
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
     - name: Verify

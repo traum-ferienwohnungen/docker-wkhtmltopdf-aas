@@ -23,7 +23,7 @@ RUN apt-get update &&                          \
 
 COPY swagger.yaml package.json app.coffee /
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x                     \
+RUN curl -sL https://deb.nodesource.com/setup_20.x                     \
     -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh    && \
     rm /tmp/nodesource_setup.sh
 
