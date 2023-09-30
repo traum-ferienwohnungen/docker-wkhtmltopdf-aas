@@ -25,7 +25,6 @@ basic = auth.basic {}, (user, pass, cb) ->
 app.use helmet()
 app.use '/healthcheck', health()
 app.use '/', express.static(__dirname + '/documentation')
-app.use auth.connect(basic)
 app.use status()
 app.use prometheusMetrics()
 app.use log('combined')
