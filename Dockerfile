@@ -21,9 +21,6 @@ RUN apt-get update &&                          \
     xfonts-base  			                   \
     python
 
-ENV WK_URL=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/ \
-    WK_PKG=wkhtmltox_0.12.5-1.focal_amd64.deb
-
 COPY swagger.yaml package.json app.coffee /
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x                     \
@@ -34,8 +31,11 @@ RUN apt-get install -y --no-install-recommends nodejs
 
 RUN wget -q https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
 
-RUN dpkg -i wkhtmltox_0.12.5-1.focal_amd64.deb && rm wkhtmltox_0.12.5-1.focal_amd64.deb && \
-    rm /usr/local/bin/wkhtmltoimage
+RUN dpkg -i wkhtmltox_0.12.5-1.focal_amd64.deb
+
+RUN rm wkhtmltox_0.12.5-1.focal_amd64.deb
+
+RUN rm /usr/local/bin/wkhtmltoimage
 
 RUN npm install -g coffeescript forever bootprint bootprint-openapi && \
     bootprint openapi swagger.yaml documentation                    && \
