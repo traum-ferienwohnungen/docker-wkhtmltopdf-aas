@@ -32,7 +32,9 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x                     \
 
 RUN apt-get install -y --no-install-recommends nodejs
 
-RUN wget -q $WK_URL/$WK_PKG && dpkg -i $WK_PKG && rm $WK_PKG        && \
+RUN wget -q https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
+
+RUN dpkg -i $WK_PKG && rm $WK_PKG        && \
     rm /usr/local/bin/wkhtmltoimage
 
 RUN npm install -g coffeescript forever bootprint bootprint-openapi && \
