@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update &&                          \
-    apt-get install -y --no-install-recommends \
+    apt install -y --no-install-recommends \
     add-apt-key                                \
     fontconfig                                 \
     curl				                       \
@@ -27,7 +27,7 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 
-RUN apt update && apt-get install -y --no-install-recommends nodejs
+RUN apt update && apt install -y --no-install-recommends nodejs
 
 # Déterminer l'architecture
 ARG TARGETPLATFORM
