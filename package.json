@@ -35,7 +35,6 @@
     "http-auth": "^4.2.0",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "npm-check-updates": "^16.14.6",
     "promisepipe": "^3.0.0",
     "temp-write": "^5.0.0",
     "tmp-promise": "^3.0.3"
@@ -46,6 +45,7 @@
     "coffee-coverage": "^3.0.1",
     "coffeelint": "^2.1.0",
     "mocha": "^10.2.0",
+    "npm-check-updates": "^16.14.11",
     "nyc": "^15.1.0",
     "supertest": "^6.3.3",
     "textract": "^2.5.0"
