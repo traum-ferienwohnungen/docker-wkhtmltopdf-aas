@@ -16,8 +16,6 @@ helmet = require 'helmet'
 log = require 'morgan'
 fs = require 'fs'
 
-require('dotenv').config({ silent: true })
-
 app = express()
 
 payload_limit = process.env.PAYLOAD_LIMIT or '20mb'
@@ -41,8 +39,6 @@ app.use log('combined')
 app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
   console.log 'Fichier reçu'
 
-  # decode base64
-  # comment être sur que le traitement est à 100% ?
   decode = (base64) -> 
     Buffer.from(base64, 'base64').toString 'utf8' if base64?
   tmpFile = (ext) -> 
