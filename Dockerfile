@@ -40,4 +40,4 @@ RUN npm update       && \
 
 EXPOSE 5555
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
