@@ -1,7 +1,7 @@
 fileWrite = require 'fs-writefile-promise'
+{ spawn }           = require 'child-process-promise'
 prometheusMetrics = require 'express-prom-bundle'
-{spawn} = require 'child-process-promise'
-status = require 'express-status-monitor'
+statusMonitor = require 'express-status-monitor'
 {flow, map, compact, values, flatMap,
   toPairs, first, last, concat, remove,
   flatten, negate} = require 'lodash/fp'
@@ -11,39 +11,41 @@ bodyParser = require 'body-parser'
 parallel = require 'bluebird'
 tmp = require 'tmp-promise'
 express = require 'express'
-auth = require 'http-auth'
+basicAuth = require('express-basic-auth')
 helmet = require 'helmet'
 log = require 'morgan'
 fs = require 'fs'
+
+
 app = express()
 
-payload_limit = process.env.PAYLOAD_LIMIT or '100kb'
-
-basic = auth.basic {}, (user, pass, cb) ->
-  cb(user == process.env.USER && pass == process.env.PASS)
+payload_limit = process.env.PAYLOAD_LIMIT or '20mb'
 
 app.use helmet()
 app.use '/healthcheck', health()
 app.use '/', express.static(__dirname + '/documentation')
-app.use auth.connect(basic)
-app.use status()
+app.use(basicAuth({
+  users: { [process.env.USER]: process.env.PASS },
+  challenge: true,
+  realm: 'Restricted Area'
+}))
+# don't work
+#app.use(statusMonitor({
+#  eventLoop: false
+#}))
+
 app.use prometheusMetrics()
 app.use log('combined')
 
 app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
 
-  decode = (base64) ->
-    Buffer.from(base64, 'base64').toString 'utf8' if base64?
-
-  tmpFile = (ext) ->
-    tmp.file(dir: '/tmp', postfix: '.' + ext).then (f) -> f.path
-
-  tmpWrite = (content) ->
-    tmpFile('html').then (f) -> fileWrite f, content if content?
+  decode = (base64) -> Buffer.from(base64, 'base64').toString 'utf8' if base64?
+  tmpFile = (ext) -> (await tmp.file(dir: '/tmp', postfix: '.' + ext)).path
+  tmpWrite = (content) -> fileWrite await tmpFile('html'), content if content?
 
   # compile options to arguments
   arg = flow(toPairs, flatMap((i) -> ['--' + first(i), last(i)]), compact)
-
+  
   parallel.join tmpFile('pdf'),
   map(flow(decode, tmpWrite), [body.header, body.footer, body.contents])...,
   (output, header, footer, content) ->
