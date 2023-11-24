@@ -31,9 +31,9 @@ app.use(basicAuth({
   realm: 'Restricted Area'
 }))
 # don't work
-app.use(statusMonitor({
-  eventLoop: false
-}))
+#app.use(statusMonitor({
+#  eventLoop: false
+#}))
 
 app.use prometheusMetrics()
 app.use log('combined')
