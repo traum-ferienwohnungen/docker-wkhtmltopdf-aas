@@ -16,6 +16,7 @@ helmet = require 'helmet'
 log = require 'morgan'
 fs = require 'fs'
 
+
 app = express()
 
 payload_limit = process.env.PAYLOAD_LIMIT or '20mb'
@@ -39,12 +40,9 @@ app.use log('combined')
 app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
   console.log 'Fichier reçu'
 
-  decode = (base64) -> 
-    Buffer.from(base64, 'base64').toString 'utf8' if base64?
-  tmpFile = (ext) -> 
-    (await tmp.file(dir: '/tmp', postfix: '.' + ext)).path
-  tmpWrite = (content) -> 
-    fileWrite await tmpFile('html'), content if content?
+  decode = (base64) -> Buffer.from(base64, 'base64').toString 'utf8' if base64?
+  tmpFile = (ext) -> (await tmp.file(dir: '/tmp', postfix: '.' + ext)).path
+  tmpWrite = (content) -> fileWrite await tmpFile('html'), content if content?
 
   # compile options to arguments
   arg = flow(toPairs, flatMap((i) -> ['--' + first(i), last(i)]), compact)
@@ -65,5 +63,5 @@ app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
     .catch -> res.status(BAD_REQUEST = 400).send 'invalid arguments'
     .then -> map fs.unlinkSync, compact([output, header, footer, content])
 
-app.listen process.env.PORT or 5555
+app.listen process.env.PORT or 6555
 module.exports = app
