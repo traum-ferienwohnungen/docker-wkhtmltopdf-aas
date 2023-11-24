@@ -38,7 +38,6 @@ app.use prometheusMetrics()
 app.use log('combined')
 
 app.post '/', bodyParser.json(limit: payload_limit), ({body}, res) ->
-  console.log 'Fichier reçu'
 
   decode = (base64) -> Buffer.from(base64, 'base64').toString 'utf8' if base64?
   tmpFile = (ext) -> (await tmp.file(dir: '/tmp', postfix: '.' + ext)).path
